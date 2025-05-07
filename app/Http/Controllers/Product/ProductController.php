@@ -7,6 +7,7 @@ use App\Models\Brand;
 use App\Models\Color;
 use App\Models\Product;
 use App\Models\Category;
+use App\Models\Discount;
 use Illuminate\Support\Str;
 use App\Models\ProductImage;
 use Illuminate\Http\Request;
@@ -152,6 +153,7 @@ class ProductController extends Controller
         $colors = Color::all();
         $categories = Category::all();
         $brands = Brand::all();
+        $discounts = Discount::all();
 
         return view('product.editProduct')->with([
             'product' => $product,
@@ -159,6 +161,7 @@ class ProductController extends Controller
             'colors' => $colors,
             'categories' => $categories,
             'brands' => $brands,
+            'discounts' => $discounts,
             'title' => 'Edit Product',
             'heading' => 'Edit Product',
         ]);

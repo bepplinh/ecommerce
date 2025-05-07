@@ -24,10 +24,11 @@ class UpdateDiscountRequest extends FormRequest
         $discountId = $this->route('discount');
         return [
             'name' => 'required|string|max:255|unique:discounts,name,' . $discountId,
+            'type' => 'required|in:percentage,fixed',
             'value' => 'required|numeric|min:0',
             'start_at' => 'nullable|date',
             'end_at' => 'nullable|date|after_or_equal:start_at',
-
+            'status' => 'required|in:active,inactive',
         ];
     }
 

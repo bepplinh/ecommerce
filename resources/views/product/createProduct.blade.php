@@ -173,20 +173,6 @@
                     </div>
                 </div>
 
-                <div class="mb-3">
-                    <label for="images" class="form-label">Ảnh sản phẩm</label>
-                    <input type="file" class="form-control @error('images') is-invalid @enderror" name="images[]"
-                        id="images" accept="image/*" multiple onchange="previewImages(this)">
-                    @error('images')
-                    <div class="invalid-feedback d-block">{{ $message }}</div>
-                    @enderror
-
-                    <div class="mt-2" id="imagePreviewContainer" style="display: none;">
-                        <div id="imagePreviews"></div>
-                    </div>
-                </div>
-
-
                 <div class="text-end">
                     <a href="{{ route('products.create') }}" class="btn btn-secondary me-2"
                         onclick="return confirmCancel(event)">
@@ -200,6 +186,7 @@
         </div>
     </div>
 </div>
+
 
 <script>
     function confirmCancel(event) {
@@ -215,40 +202,6 @@
             this.value = Number(rawValue).toLocaleString('vi-VN');
             this.setSelectionRange(this.value.length, this.value.length);
         });
-
-        function previewImages(input) {
-            const previewContainer = document.getElementById('imagePreviews');
-            previewContainer.innerHTML = ''; // Clear previous previews
-            const container = document.getElementById('imagePreviewContainer');
-
-            if (input.files && input.files.length > 0) {
-                container.style.display = 'block'; // Show preview container
-                for (let i = 0; i < input.files.length; i++) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        const img = document.createElement('img');
-                        img.src = e.target.result;
-                        img.classList.add('img-thumbnail');
-                        img.style.maxWidth = '200px';
-                        img.style.marginRight = '10px';
-                        previewContainer.appendChild(img);
-                    };
-                    reader.readAsDataURL(input.files[i]);
-                }
-            } else {
-                clearImage();
-            }
-        }
-
-        function clearImage() {
-            const input = document.getElementById('images');
-            const previewContainer = document.getElementById('imagePreviews');
-            const container = document.getElementById('imagePreviewContainer');
-
-            input.value = '';
-            previewContainer.innerHTML = '';
-            container.style.display = 'none';
-        }
 
         let variantIndex = {{ old('variants') ? count(old('variants')) : 1 }};
 
@@ -295,3 +248,4 @@
 
 </script>
 @endsection
+

@@ -385,7 +385,7 @@
                                         <a href="{{ route('products.show', $product->id) }}">{{ $product->name }}</a>
                                     </h6>
                                     <div class="product-card__price d-flex">
-                                        <span class="money price">$29</span>
+                                        <span class="money price">${{ number_format($product->price, 0, '.', ',') }}</span>
                                     </div>
                                     <div class="product-card__review d-flex align-items-center">
                                         <div class="reviews-group d-flex">

@@ -49,6 +49,7 @@
                             <th class="text-center">Hình ảnh</th>
                             <th class="text-center">Tên sản phẩm</th>
                             <th class="text-center">Giá (VNĐ)</th>
+                            <th class="text-center">Giá khuyến mãi (VNĐ)</th>
                             <th class="text-center">Biến thể (Màu / Size / Số lượng)</th>
                             <th class="text-center">Thương hiệu</th>
                             <th class="text-center">Danh mục</th>
@@ -66,6 +67,18 @@
                             </td>
                             <td>{{ $product->name }}</td>
                             <td>{{ number_format($product->price, 0, ',', '.') }}</td>
+                            <td>
+                                @if ($product->discount_id) 
+                                    @if ($product->sale_price) 
+                                        {{ number_format($product->sale_price, 0, ',', '.') }}
+                                    @else
+                                        Không có
+                                    @endif
+                                @else
+                                    Không có
+                                @endif
+                            </td>
+                            
                             <td>
                                 @php
                                     $variantsByColor = [];

@@ -28,6 +28,11 @@ class Product extends Model
         return $this->belongsTo(Brand::class);
     }
 
+    public function discount()
+    {
+        return $this->belongsTo(Discount::class);
+    }
+
     public function sizes()
     {
         return $this->belongsToMany(Size::class)->withPivot('stock')->withTimestamps();
@@ -45,5 +50,23 @@ class Product extends Model
     public function productVariants()
     {
         return $this->hasMany(ProductVariants::class);
+    }
+
+    public function getSalePriceAttribute()
+    {
+        // Kiểm tra xem sản phẩm có chương trình giảm giá hay không
+        if ($this->discount) {
+            // Nếu loại giảm giá là 'percentage', tính giá khuyến mãi theo tỷ lệ phần trăm
+            if ($this->discount->type === 'percentage') {
+                return $this->price - ($this->price * $this->discount->value / 100);
+            }
+            // Nếu loại giảm giá là 'fixed', giảm giá một giá trị cố định
+            elseif ($this->discount->type === 'fixed') {
+                return $this->price - $this->discount->value;
+            }
+        }
+
+        // Nếu không có giảm giá, trả về giá gốc
+        return $this->price;
     }
 }

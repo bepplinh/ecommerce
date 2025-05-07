@@ -1,4 +1,5 @@
 @extends('layout.adminDashboard')
+
 @section('content')
     <div class="container">
         <div class="row justify-content-center">
@@ -6,10 +7,10 @@
                 <div class="card-header d-flex align-items-center">
                     <h5 class="mb-0">Chỉnh sửa mã giảm giá</h5>
                     <a class="btn btn-secondary ms-auto" href="{{ route('discounts.index') }}">
-                        <i class="fas fa-list me-1"></i> List Discounts
+                        <i class="fas fa-list me-1"></i> Danh sách mã giảm giá
                     </a>
                 </div>
-                
+
                 <div class="card-body">
                     <form action="{{ route('discounts.update', $discount->id) }}" method="POST">
                         @csrf
@@ -55,9 +56,6 @@
                                             name="value"
                                             value="{{ old('value', $discount->value) }}" 
                                             required>
-                                        <div class="input-group-append">
-                                            <span class="input-group-text" id="value-addon">%</span>
-                                        </div>
                                     </div>
                                     @error('value')
                                         <div class="invalid-feedback">{{ $message }}</div>
@@ -68,7 +66,7 @@
                             </div>
 
                             <div class="col-md-2"></div>
-                            
+
                             <div class="col-md-5">
                                 <div class="form-group">
                                     <label for="start_at">Ngày bắt đầu</label>
@@ -122,72 +120,34 @@
         </div>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const typePercentage = document.getElementById('type_percentage');
-            const typeFixed = document.getElementById('type_fixed');
-            const valueAddon = document.getElementById('value-addon');
-            const percentageNote = document.getElementById('percentage-note');
-            const fixedNote = document.getElementById('fixed-note');
-            const valueInput = document.getElementById('value');
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    const typePercentage = document.getElementById('type_percentage');
+    const typeFixed = document.getElementById('type_fixed');
+    const percentageNote = document.getElementById('percentage-note');
+    const fixedNote = document.getElementById('fixed-note');
 
-            function formatNumberInput(value) {
-                if (!value) return '';
-                // Remove non-numeric characters and limit to 10 digits
-                value = value.toString().replace(/[^\d]/g, '').slice(0, 10);
-                // Format with thousand separator
-                return value.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-            }
+    // Hàm cập nhật hiển thị thông báo
+    function updateNote() {
+        if (typePercentage.checked) {
+            // Nếu chọn "percentage", hiển thị thông báo phần trăm
+            percentageNote.classList.remove('d-none');
+            fixedNote.classList.add('d-none');
+        } else if (typeFixed.checked) {
+            // Nếu chọn "fixed", hiển thị thông báo số tiền
+            percentageNote.classList.add('d-none');
+            fixedNote.classList.remove('d-none');
+        }
+    }
 
-            function updateValueType() {
-                if (typePercentage.checked) {
-                    valueAddon.textContent = '%';
-                    percentageNote.classList.remove('d-none');
-                    fixedNote.classList.add('d-none');
-                    valueInput.value = valueInput.value.replace(/,/g, '');
-                } else {
-                    valueAddon.textContent = 'VNĐ';
-                    percentageNote.classList.add('d-none');
-                    fixedNote.classList.remove('d-none');
-                    if (!initialLoad) {
-                        valueInput.value = formatNumberInput(valueInput.value.replace(/,/g, ''));
-                    }
-                }
-            }
+    // Lần đầu khi load trang, gọi hàm cập nhật thông báo
+    updateNote();
 
-            let initialLoad = true;
-            updateValueType();
-            if (typeFixed.checked) {
-                valueInput.value = formatNumberInput(valueInput.value);
-            }
-            initialLoad = false;
+    // Thêm sự kiện thay đổi khi chọn type giảm giá
+    typePercentage.addEventListener('change', updateNote);
+    typeFixed.addEventListener('change', updateNote);
+});
 
-            valueInput.addEventListener('input', function() {
-                if (typePercentage.checked) {
-                    let value = this.value.replace(/\D/g, '');
-                    if (parseFloat(value) > 100) {
-                        this.value = '100';
-                    }
-                } else {
-                    let rawValue = this.value.replace(/\D/g, '');
-                    if (rawValue.length > 10) {
-                        rawValue = rawValue.slice(0, 10);
-                    }
-                    this.value = formatNumberInput(rawValue);
-                }
-            });
+</script>
 
-            document.querySelector('form').addEventListener('submit', function(e) {
-                if (typeFixed.checked) {
-                    valueInput.value = valueInput.value.replace(/,/g, '');
-                }
-            });
-
-            typePercentage.addEventListener('change', updateValueType);
-            typeFixed.addEventListener('change', updateValueType);
-
-            // Format initial value
-            updateValueType();
-        });
-    </script>
 @endsection
