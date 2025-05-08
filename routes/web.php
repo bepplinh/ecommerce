@@ -14,6 +14,7 @@ use App\Http\Controllers\Product\ColorController;
 use App\Http\Controllers\Product\ProductController;
 use App\Http\Controllers\Product\DiscountController;
 use App\Http\Controllers\Category\CategoryController;
+use App\Http\Controllers\Product\ImageProductController;
 
 Route::get('/', function () {
     return view('client.home');
@@ -64,6 +65,12 @@ Route::get('login/google', [SocialController::class, 'redirectToGoogle'])->name(
 Route::get('login/google/callback', [SocialController::class, 'handleGoogleCallback']);
 
 Route::get('/shop', [ShopController::class, 'index'])->name('shop');
+
+Route::get('/test', [ImageProductController::class, 'index']);
+Route::get('/products/{product}/edit', [ImageProductController::class, 'edit'])->name('productImage.edit');
+Route::get('/product-variants/{variant}/images/create', [ImageProductController::class, 'create'])->name('product.images.create');
+
+
 
 
 

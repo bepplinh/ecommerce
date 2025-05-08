@@ -68,6 +68,12 @@
                                 <p>Color For Product</p>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a href="{{ route('colors.index') }}" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Images For Product</p>
+                            </a>
+                        </li>
                     </ul>
                 </li>
 

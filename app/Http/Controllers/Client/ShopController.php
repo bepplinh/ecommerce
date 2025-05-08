@@ -16,12 +16,12 @@ class ShopController extends Controller
         $categories = Category::get();
         $brands = Brand::get();
         $sizes = Size::get();
-        $products = Product::with(['mainImage', 'category', 'brand'])->paginate(10)->withQueryString();
+        $products = Product::with(['category', 'brand'])->paginate(10)->withQueryString();
         // Search functionality
         if (request('search')) {
             $products = Product::where('name', 'like', '%' . request('search') . '%')
                 ->orWhere('code', 'like', '%' . request('search') . '%')
-                ->with(['mainImage', 'category', 'brand'])
+                ->with(['category', 'brand'])
                 ->paginate(10)
                 ->withQueryString();
         }
@@ -46,7 +46,7 @@ class ShopController extends Controller
                 $products = $products->sortBy('created_at');
                 break;
             default:
-                $products = Product::latest()->with(['mainImage', 'category', 'brand'])->paginate(10)->withQueryString();
+                $products = Product::latest()->with(['category', 'brand'])->paginate(10)->withQueryString();
         }
         // Filter by category
         if (request('category')) {

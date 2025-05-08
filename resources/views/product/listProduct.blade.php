@@ -1,6 +1,6 @@
 @extends('layout.adminDashboard')
 @section('content')
-<div class="container mt-4">
+<div class="container-fluid mt-4">
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center text-center">
             <h5 class="mb-0">Danh sách sản phẩm</h5>
@@ -46,7 +46,7 @@
                     <thead>
                         <tr class="align-middle">
                             <th class="text-center">Mã SP</th>
-                            <th class="text-center">Hình ảnh</th>
+                            <th class="text-center">Ảnh</th>
                             <th class="text-center">Tên sản phẩm</th>
                             <th class="text-center">Giá (VNĐ)</th>
                             <th class="text-center">Giá khuyến mãi (VNĐ)</th>
@@ -62,8 +62,8 @@
                         <tr>
                             <td>{{ $product->code }}</td>
                             <td>
-                                <img src="{{ asset($product->image) }}" alt="{{ $product->name }}" class="img-thumbnail mx-auto d-block"
-                                    style="max-width: 100px;">
+                                <img src="{{ asset($product->image_url) }}" alt="" class="img-thumbnail mx-auto d-block"
+                                style="max-width: 100px;">
                             </td>
                             <td>{{ $product->name }}</td>
                             <td>{{ number_format($product->price, 0, ',', '.') }}</td>
@@ -75,7 +75,7 @@
                                         Không có
                                     @endif
                                 @else
-                                    Không có
+                                    <span class="badge bg-secondary">Empty</span>
                                 @endif
                             </td>
                             

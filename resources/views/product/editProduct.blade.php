@@ -57,11 +57,9 @@
                                         <div class="form-group">
                                             <label for="price" class="form-label">Giá (VNĐ) <span
                                                     class="text-danger">*</span></label>
-                                            <input type="number"
-                                                class="form-control @error('price') is-invalid @enderror" id="price"
-                                                name="price"
-                                                value="{{ old('price', number_format($product->price, 0, ',', '.')) }}"
-                                                required>
+                                                    <input type="text" class="form-control @error('price') is-invalid @enderror" id="price"
+                                                    name="price" value="{{ old('price', number_format($product->price)) }}" required 
+                                                    oninput="formatPrice(this)">
                                             @error('price')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
@@ -82,25 +80,11 @@
                                                     data-value="{{ $discount->value }}"
                                                     data-percentage="{{ $discount->percentage }}">
                                                     {{ $discount->name }}
+                                                    ({{ $discount->type === 'fixed' ? number_format($discount->value, 0, ',', '.') . ' VNĐ' : $discount->value . '%' }})
                                                 </option>
                                                 @endforeach
                                             </select>
                                             @error('discount_id')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-                                    </div>
-
-
-                                    <!-- Sale Price Field -->
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label for="sale_price" class="form-label">Giá khuyến mãi (VNĐ)</label>
-                                            <input type="number"
-                                                class="form-control @error('sale_price') is-invalid @enderror"
-                                                id="sale_price" name="sale_price"
-                                                value="{{ old('sale_price', number_format($product->sale_price, 0, ',', '.')) }}">
-                                            @error('sale_price')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
                                         </div>
@@ -170,24 +154,9 @@
                                         </div>
                                     </div>
 
-                                    <!-- Mô tả ngắn -->
                                     <div class="col-12">
                                         <div class="form-group">
-                                            <label for="short_description" class="form-label">Mô tả ngắn</label>
-                                            <textarea
-                                                class="form-control @error('short_description') is-invalid @enderror"
-                                                id="short_description" name="short_description"
-                                                rows="2">{{ old('short_description', $product->short_description) }}</textarea>
-                                            @error('short_description')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-                                    </div>
-
-                                    <!-- Mô tả chi tiết -->
-                                    <div class="col-12">
-                                        <div class="form-group">
-                                            <label for="description" class="form-label">Mô tả chi tiết</label>
+                                            <label for="description" class="form-label">Mô tả </label>
                                             <textarea
                                                 class="form-control editor @error('description') is-invalid @enderror"
                                                 id="description" name="description"
@@ -197,56 +166,31 @@
                                             @enderror
                                         </div>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
 
-                    <!-- Hình ảnh và trạng thái -->
-                    <div class="col-md-4">
-                        <div class="card mb-3">
-                            <div class="card-header bg-white">
-                                <h6 class="card-title mb-0">Hình ảnh</h6>
-                            </div>
-                            <div class="card-body">
-                                <div class="text-center mb-3">
-                                    <img src="{{ asset($product->image) }}" alt="{{ $product->name }}"
-                                        id="preview-image" class="img-thumbnail" style="max-height: 200px;">
-                                </div>
-                                <div class="form-group">
-                                    <label for="image" class="form-label">Hình ảnh sản phẩm</label>
-                                    <input type="file" class="form-control @error('image') is-invalid @enderror"
-                                        id="image" name="image" accept="image/*" onchange="previewImage(this)">
-                                    @error('image')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Hình ảnh phụ -->
-                        <div class="card">
-                            <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                                <h6 class="card-title mb-0">Hình ảnh phụ</h6>
-                                <button type="button" class="btn btn-sm btn-primary" id="add-image">
-                                    <i class="fas fa-plus"></i>
-                                </button>
-                            </div>
-                            <div class="card-body">
-                                <div id="gallery-container">
-                                    @if($product->gallery)
-                                    @foreach(json_decode($product->gallery) as $index => $image)
-                                    <div class="gallery-item mb-2 d-flex align-items-center">
-                                        <img src="{{ asset($image) }}" class="img-thumbnail me-2"
-                                            style="height: 60px; width: 60px; object-fit: cover;">
-                                        <input type="text" name="gallery[]" class="form-control form-control-sm"
-                                            value="{{ $image }}">
-                                        <button type="button" class="btn btn-sm btn-danger ms-2 remove-gallery">
-                                            <i class="fas fa-times"></i>
-                                        </button>
+                                    <div class="mb-3">
+                                        <label for="image" class="form-label">Hình ảnh sản phẩm</label>
+                                        <input type="file" class="form-control @error('image') is-invalid @enderror" name="image"
+                                               id="image" accept="image/*">
+                                        <div class="form-text">Chỉ có thể chọn một ảnh. Định dạng: JPG, PNG, GIF</div>
+                                    
+                                        <div id="image-preview" class="mt-2">
+                                            @if($product->image_url)
+                                                <div class="current-image" id="current-image">
+                                                    <!-- Hiển thị ảnh hiện tại của sản phẩm -->
+                                                    <img src="{{ asset($product->image_url) }}" 
+                                                         class="img-thumbnail" 
+                                                         style="width: 150px; height: 150px; object-fit: cover;">
+                                                    <div class="mt-2">
+                                                        <small class="text-muted">Ảnh hiện tại</small>
+                                                    </div>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    
+                                        @error('image')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
                                     </div>
-                                    @endforeach
-                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -268,7 +212,6 @@
                                     <tr>
                                         <th>Màu sắc</th>
                                         <th>Kích thước</th>
-                                        <th>SKU</th>
                                         <th>Số lượng</th>
                                         <th>Thao tác</th>
                                     </tr>
@@ -305,15 +248,11 @@
                                             </select>
                                         </td>
                                         <td>
-                                            <input type="text" name="variants[{{ $index }}][sku]"
-                                                class="form-control form-control-sm" value="{{ $variant->sku }}">
-                                        </td>
-                                        <td>
                                             <input type="number" name="variants[{{ $index }}][stock]"
                                                 class="form-control form-control-sm" value="{{ $variant->stock }}"
                                                 required>
                                         </td>
-                                        <td>
+                                        <td class="align-middle">
                                             <button type="button" class="btn btn-sm btn-danger remove-variant">
                                                 <i class="fas fa-trash"></i>
                                             </button>
@@ -364,9 +303,6 @@
             </select>
         </td>
         <td>
-            <input type="text" name="variants[__INDEX__][sku]" class="form-control form-control-sm">
-        </td>
-        <td>
             <input type="number" name="variants[__INDEX__][stock]" class="form-control form-control-sm" value="0"
                 required>
         </td>
@@ -404,20 +340,65 @@
 </script>
 @endpush
 
-<!-- Template hình ảnh phụ -->
-<template id="gallery-template">
-    <div class="gallery-item mb-2 d-flex align-items-center">
-        <img src="{{ asset('images/placeholder.png') }}" class="img-thumbnail me-2"
-            style="height: 60px; width: 60px; object-fit: cover;">
-        <input type="file" name="gallery_files[]" class="form-control form-control-sm gallery-file" accept="image/*">
-        <button type="button" class="btn btn-sm btn-danger ms-2 remove-gallery">
-            <i class="fas fa-times"></i>
-        </button>
-    </div>
-</template>
+<script>
+    document.getElementById('image').addEventListener('change', function (e) {
+        const preview = document.getElementById('image-preview');
+        preview.innerHTML = ''; // Xóa ảnh cũ (nếu có)
 
+        const file = e.target.files[0]; // Lấy tệp ảnh đầu tiên
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                // Tạo phần tử <div> để chứa ảnh và nút xóa
+                const div = document.createElement('div');
+                div.style.position = 'relative';
+                div.style.width = '150px';
+                div.style.height = '150px';
+                
+                // Tạo phần tử <img> để hiển thị ảnh đã chọn
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.classList.add('img-thumbnail');
+                img.style.width = '100%';
+                img.style.height = '100%';
+                img.style.objectFit = 'cover'; // Đảm bảo ảnh không bị méo
+
+                // Tạo nút xóa
+                const removeButton = document.createElement('div');
+                removeButton.innerText = 'X';
+                removeButton.style.position = 'absolute';
+                removeButton.style.top = '5px';
+                removeButton.style.right = '5px';
+                removeButton.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+                removeButton.style.color = '#fff';
+                removeButton.style.padding = '5px';
+                removeButton.style.borderRadius = '50%';
+                removeButton.style.cursor = 'pointer';
+                removeButton.style.fontWeight = 'bold';
+
+                // Thêm sự kiện xóa ảnh
+                removeButton.addEventListener('click', function () {
+                    preview.innerHTML = ''; // Xóa ảnh và nút xóa
+                    document.getElementById('image').value = ''; // Reset trường file
+                });
+
+                // Thêm ảnh và nút xóa vào div
+                div.appendChild(img);
+                div.appendChild(removeButton);
+                
+                // Thêm div vào preview
+                preview.appendChild(div);
+            };
+            reader.readAsDataURL(file); // Đọc ảnh và tạo URL
+        }
+    });
+</script>
 
 <script>
+    function formatPrice(input) {
+    var value = input.value.replace(/\D/g, '');  // Xóa các ký tự không phải số
+    input.value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ",");  // Thêm dấu phẩy sau mỗi 3 chữ số
+}
     // Preview hình ảnh chính
     function previewImage(input) {
         if (input.files && input.files[0]) {

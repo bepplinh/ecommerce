@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('code')->unique();
             $table->string('description');
             $table->decimal('price', 10, 0);
+            $table->string('image_url')->nullable();
             $table->foreignId('category_id')->constrained()->onDelete('cascade');
             $table->foreignId('brand_id')->constrained()->onDelete('cascade');
             $table->foreignId('discount_id')->nullable()->constrained()->onDelete('cascade');

@@ -13,6 +13,8 @@ class Product extends Model
         'code',
         'description',
         'price',
+        'discount_id',
+        'image_url',
         'category_id',
         'brand_id',
         'status',
@@ -33,20 +35,6 @@ class Product extends Model
         return $this->belongsTo(Discount::class);
     }
 
-    public function sizes()
-    {
-        return $this->belongsToMany(Size::class)->withPivot('stock')->withTimestamps();
-    }
-
-    public function images()
-    {
-        return $this->hasMany(ProductImage::class);
-    }
-
-    public function mainImage()
-    {
-        return $this->hasOne(ProductImage::class)->where('is_main', true);
-    }
     public function productVariants()
     {
         return $this->hasMany(ProductVariants::class);

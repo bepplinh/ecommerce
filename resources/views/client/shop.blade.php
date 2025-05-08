@@ -344,23 +344,14 @@
                                 <div class="pc__img-wrapper">
                                     <div class="swiper-container background-img js-swiper-slider" data-settings='{"resizeObserver": true}'>
                                         <div class="swiper-wrapper">
-                                            @if($product->mainImage)
                                                 <div class="swiper-slide">
                                                     <a href="{{ route('products.show', $product->id) }}">
-                                                        <img loading="lazy" src="{{ asset($product->mainImage->image_path) }}" width="330" height="400" alt="{{ $product->name }}" class="pc__img">
+                                                        <img loading="lazy" src="{{ asset($product->image_url) }}" width="330" height="400" alt="{{ $product->name }}" class="pc__img">
                                                     </a>
                                                 </div>
-                                            @endif
+                                           
                 
-                                            @foreach($product->images as $image)
-                                                @if(!$product->mainImage || $image->id !== $product->mainImage->id)
-                                                    <div class="swiper-slide">
-                                                        <a href="{{ route('products.show', $product->id) }}">
-                                                            <img loading="lazy" src="{{ asset($image->image_path) }}" width="330" height="400" alt="{{ $product->name }}" class="pc__img">
-                                                        </a>
-                                                    </div>
-                                                @endif
-                                            @endforeach
+                                            
                                         </div>
                 
                                         <span class="pc__img-prev">

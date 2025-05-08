@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Product;
 
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -31,11 +31,11 @@ class UpdateProductRequest extends FormRequest
             'status' => 'required|in:active,inactive',
             'category_id' => 'required|exists:categories,id',
             'brand_id' => 'required|exists:brands,id',
-            'images' => 'nullable|array',
-            'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
-            'replace_images' => 'nullable|array',
-            'replace_images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
-            'deleted_images' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'variants' => 'nullable|array',
+            'variants.*.color_id' => 'required|exists:colors,id',
+            'variants.*.size_id' => 'required|exists:sizes,id',
+            'variants.*.stock' => 'required|integer|min:0',
         ];
     }
 

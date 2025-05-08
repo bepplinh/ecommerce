@@ -17,7 +17,6 @@ return new class extends Migration
             $table->foreignId('color_id')->constrained()->onDelete('cascade');
             $table->foreignId('size_id')->constrained()->onDelete('cascade');
             $table->integer('stock')->default(0);
-            $table->string('sku')->unique();
             $table->timestamps();
 
             $table->unique(['product_id', 'color_id', 'size_id'], 'product_variant_unique');
