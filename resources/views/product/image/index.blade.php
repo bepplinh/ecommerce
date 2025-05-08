@@ -6,30 +6,40 @@
         <div class="card">
             <div class="card-body">
                 <h3>Danh sách sản phẩm</h3>
-
                 <table class="table table-bordered">
                     <thead>
                         <tr>
-                            <th>Tên sản phẩm</th>
-                            <th>Màu sắc</th>
-                            <th>Hành động</th>
+                            <th class="w-10">Mã sản phẩm</th>
+                            <th class="w-10">Ảnh</th>
+                            <th class="w-10">Tên sản phẩm</th>
+                            <th class="w-60">Màu sắc</th>
+                            <th class="w-10">Hành động</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($products as $product)
                             <tr>
-                                <td>{{ $product->name }}</td>
-                                <td>
-                                    <!-- Hiển thị tất cả màu sắc của sản phẩm -->
+                                <td class="w-10">{{ $product->code }}</td>
+                                <td class="w-10">
+                                    @if ($product->image_url)
+                                        <img src="{{ asset($product->image_url) }}"
+                                            class="img-thumbnail" style="width: 100px; height: 100px;">
+                                    @else
+                                        <span class="text-muted">Chưa có ảnh</span>
+                                    @endif
+                                </td>
+                                <td class="w-10">{{ $product->name }}</td>
+                                <td class="w-60">
                                     @foreach ($product->productVariants as $variant)
                                         <span class="badge" style="background-color: {{ $variant->color->hex_code }}; color: white;">
                                             {{ $variant->color->name }}
                                         </span>
                                     @endforeach
                                 </td>
-                                <td>
-                                    <!-- Nút chỉnh sửa để hiển thị các màu của sản phẩm -->
-                                    <a href="{{ route('productImage.edit', $product->id) }}" class="btn btn-warning btn-sm">Chỉnh sửa</a>
+                                <td class="w-10">
+                                    <a href="{{ route('productImage.edit', $product->id) }}" class="btn btn-warning btn-sm">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
                                 </td>
                             </tr>
                         @endforeach
