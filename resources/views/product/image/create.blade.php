@@ -4,7 +4,7 @@
 <div class="container mt-4">
     <div class="card shadow-sm border-0">
         <div class="card-body p-4">
-            <form action="" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('product.images.store', $productVariant->id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <input type="hidden" name="main_image" id="mainImageInput">
 

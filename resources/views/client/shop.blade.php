@@ -345,13 +345,10 @@
                                     <div class="swiper-container background-img js-swiper-slider" data-settings='{"resizeObserver": true}'>
                                         <div class="swiper-wrapper">
                                                 <div class="swiper-slide">
-                                                    <a href="{{ route('products.show', $product->id) }}">
-                                                        <img loading="lazy" src="{{ asset($product->image_url) }}" width="330" height="400" alt="{{ $product->name }}" class="pc__img">
+                                                    <a href="{{ route('product.detail', $product->id) }}">
+                                                        <img loading="lazy" src="{{ asset($product->image_url) }}" width="330" height="400" alt="{{ $product->name }}" class="pc__img" style="object-fit: cover" />
                                                     </a>
                                                 </div>
-                                           
-                
-                                            
                                         </div>
                 
                                         <span class="pc__img-prev">
@@ -373,7 +370,7 @@
                                 <div class="pc__info position-relative">
                                     <p class="pc__category">{{ $product->category->name }}</p>
                                     <h6 class="pc__title">
-                                        <a href="{{ route('products.show', $product->id) }}">{{ $product->name }}</a>
+                                        <a href="{{ route('product.detail', $product->id) }}">{{ $product->name }}</a>
                                     </h6>
                                     <div class="product-card__price d-flex">
                                         <span class="money price">${{ number_format($product->price, 0, '.', ',') }}</span>

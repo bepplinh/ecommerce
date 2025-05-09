@@ -17,7 +17,6 @@ return new class extends Migration
             $table->foreignId('color_id')->constrained()->onDelete('cascade');
             $table->string('image_path');
             $table->boolean('is_main')->default(false);
-            $table->unique(['color_id', 'is_main']);
             $table->timestamps();
         });
     }

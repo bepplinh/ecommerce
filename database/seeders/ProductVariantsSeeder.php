@@ -29,7 +29,6 @@ class ProductVariantsSeeder extends Seeder
                         'color_id' => $color->id,
                         'size_id' => $size->id,
                         'stock' => rand(1, 100), // Random stock for demonstration
-                        'price' => rand(1000, 5000) / 100, // Random price between 10.00 and 50.00
                         'created_at' => now(),
                         'updated_at' => now(),
                     ]);

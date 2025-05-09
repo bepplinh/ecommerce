@@ -10,6 +10,7 @@ use App\Http\Controllers\Brand\BrandController;
 use App\Http\Controllers\Client\ShopController;
 use App\Http\Controllers\Product\SizeController;
 use App\Http\Controllers\auth\RegisterController;
+use App\Http\Controllers\Client\DetailController;
 use App\Http\Controllers\Product\ColorController;
 use App\Http\Controllers\Product\ProductController;
 use App\Http\Controllers\Product\DiscountController;
@@ -66,11 +67,13 @@ Route::get('login/google/callback', [SocialController::class, 'handleGoogleCallb
 
 Route::get('/shop', [ShopController::class, 'index'])->name('shop');
 
-Route::get('/test', [ImageProductController::class, 'index']);
+Route::get('/test', [ImageProductController::class, 'index'])->name('product.images.index');
 Route::get('/image/{product}/edit', [ImageProductController::class, 'edit'])->name('productImage.edit');
 Route::get('/product-variants/{variant}/images/create', [ImageProductController::class, 'create'])->name('product.images.create');
+Route::post('/product-variants/{variantId}/images', [ImageProductController::class, 'store'])->name('product.images.store');
 
-
+Route::get('/detail/{id}', [DetailController::class, 'showProductDetail'])->name('product.detail');
+Route::get('/get-sizes/{colorId}', [DetailController::class, 'getSizesByColor']);
 
 
 

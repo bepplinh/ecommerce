@@ -15,4 +15,10 @@ class Color extends Model
     {
         return $this->hasMany(ProductVariants::class);
     }
+
+
+    public function sizes()
+    {
+        return $this->hasManyThrough(Size::class, ProductVariants::class);
+    }
 }

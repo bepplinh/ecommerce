@@ -48,9 +48,9 @@ class ImageProductController extends Controller
     {
         // Xác thực dữ liệu từ request
         $request->validate([
-            'images' => 'required|array',
-            'images.*' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'main_image' => 'required|string'
+            'images' => 'required|array', // Kiểm tra mảng ảnh
+            'images.*' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // Kiểm tra định dạng ảnh
+            'main_image' => 'required|string', // Kiểm tra ảnh chính
         ]);
 
         // Lấy thông tin ProductVariant
@@ -73,15 +73,22 @@ class ImageProductController extends Controller
                 'public'
             );
 
+            // Kiểm tra xem ảnh này có phải là ảnh chính không
+            $isMain = ($fileName === $request->main_image) ? true : false;
+
             // Lưu thông tin vào database
             ProductImage::create([
                 'product_variant_id' => $variantId,
+                'color_id' => $productVariant->color_id, // Lưu ID màu
                 'image_path' => $path,
-                'is_main' => ($image->getClientOriginalName() === $request->main_image)  // Đánh dấu ảnh chính
+                'is_main' => $isMain,  // Đánh dấu ảnh chính (boolean)
             ]);
         }
 
-        return redirect()->route('admin.product.variant.index', $productVariant->product_id)
-            ->with('success', 'Ảnh sản phẩm đã được tải lên thành công!');
+        return redirect()->back()
+            ->with('toastr', [
+                'status' => 'success',
+                'message' => 'Thêm ảnh thành công',
+            ]);
     }
 }

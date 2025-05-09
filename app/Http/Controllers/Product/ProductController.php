@@ -127,15 +127,15 @@ class ProductController extends Controller
         ]);
     }
 
-    public function show($id)
-    {
-        $product = Product::findOrFail($id);
-        return view('client.detail')->with([
-            'product' => $product,
-            'title' => 'Product Details',
-            'heading' => 'Product Details',
-        ]);
-    }
+    // public function show($id)
+    // {
+    //     $product = Product::findOrFail($id);
+    //     return view('client.detail')->with([
+    //         'product' => $product,
+    //         'title' => 'Product Details',
+    //         'heading' => 'Product Details',
+    //     ]);
+    // }
 
     public function edit($id)
     {
