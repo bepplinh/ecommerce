@@ -15,20 +15,25 @@ class ProductVariants extends Model
 
     public function product()
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(Product::class, 'product_id');
     }
 
     public function size()
     {
-        return $this->belongsTo(Size::class);
+        return $this->belongsTo(Size::class, 'size_id');
     }
 
     public function color()
     {
-        return $this->belongsTo(Color::class);
+        return $this->belongsTo(Color::class, 'color_id');
     }
     public function images()
     {
         return $this->hasMany(ProductImage::class, 'product_variant_id');
+    }
+
+    public function cartItems()
+    {
+        return $this->hasMany(CartItem::class, 'product_variant_id');
     }
 }

@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\auth\LogoutController;
 use App\Http\Controllers\Auth\SocialController;
 use App\Http\Controllers\Brand\BrandController;
+use App\Http\Controllers\Client\CartController;
 use App\Http\Controllers\Client\ShopController;
 use App\Http\Controllers\Product\SizeController;
 use App\Http\Controllers\auth\RegisterController;
@@ -74,6 +75,8 @@ Route::post('/product-variants/{variantId}/images', [ImageProductController::cla
 
 Route::get('/detail/{id}', [DetailController::class, 'showProductDetail'])->name('product.detail');
 Route::get('/get-sizes/{colorId}', [DetailController::class, 'getSizesByColor']);
+
+Route::get('/cart', [CartController::class, 'showCart'])->name('cart');
 
 
 
