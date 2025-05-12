@@ -27,39 +27,37 @@ class SocialController extends Controller
                 'status' => 'success',
                 'message' => 'Login Successfully !'
             ]);
-
         } catch (\Exception $e) {
             return redirect()->route('login')->withErrors(['msg' => 'Google login failed: ' . $e->getMessage()]);
         }
     }
 
     protected function findOrCreateUser($socialUser)
-{
-    // Tìm theo google_id
-    $user = User::where('google_id', $socialUser->getId())->first();
+    {
+        // Tìm theo google_id
+        $user = User::where('google_id', $socialUser->getId())->first();
 
-    // Nếu chưa có thì tìm theo email
-    if (!$user && $socialUser->getEmail()) {
-        $user = User::where('email', $socialUser->getEmail())->first();
+        // Nếu chưa có thì tìm theo email
+        if (!$user && $socialUser->getEmail()) {
+            $user = User::where('email', $socialUser->getEmail())->first();
 
-        // Nếu có user theo email thì cập nhật google_id
-        if ($user) {
-            $user->google_id = $socialUser->getId();
-            $user->save();
+            // Nếu có user theo email thì cập nhật google_id
+            if ($user) {
+                $user->google_id = $socialUser->getId();
+                $user->save();
+            }
         }
+
+        // Phải kiểm tra lại $user sau bước trên
+        if (!$user) {
+            $user = User::create([
+                'username' => $socialUser->getName() ?? $socialUser->getNickname() ?? 'Unknown User',
+                'email' => $socialUser->getEmail(),
+                'google_id' => $socialUser->getId(),
+                'password' => bcrypt('social_login_' . uniqid()),
+            ]);
+        }
+
+        return $user;
     }
-
-    // Phải kiểm tra lại $user sau bước trên
-    if (!$user) {
-        $user = User::create([
-            'username' => $socialUser->getName() ?? $socialUser->getNickname() ?? 'Unknown User',
-            'email' => $socialUser->getEmail(),
-            'google_id' => $socialUser->getId(),
-            'password' => bcrypt('social_login_' . uniqid()), 
-        ]);
-    }
-
-    return $user;
-}
-
 }

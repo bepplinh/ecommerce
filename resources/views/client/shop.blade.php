@@ -399,25 +399,50 @@
                 
 
                 <nav class="shop-pages d-flex justify-content-between mt-3" aria-label="Page navigation">
-                    <a href="#" class="btn-link d-inline-flex align-items-center">
-                        <svg class="me-1" width="7" height="11" viewBox="0 0 7 11"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <use href="#icon_prev_sm" />
-                        </svg>
-                        <span class="fw-medium">PREV</span>
-                    </a>
+                    {{-- Previous Button --}}
+                    @if ($products->onFirstPage())
+                        <a href="#" class="btn-link d-inline-flex align-items-center disabled" aria-disabled="true">
+                            <svg class="me-1" width="7" height="11" viewBox="0 0 7 11" xmlns="http://www.w3.org/2000/svg">
+                                <use href="#icon_prev_sm" />
+                            </svg>
+                            <span class="fw-medium">PREV</span>
+                        </a>
+                    @else
+                        <a href="{{ $products->previousPageUrl() }}" class="btn-link d-inline-flex align-items-center">
+                            <svg class="me-1" width="7" height="11" viewBox="0 0 7 11" xmlns="http://www.w3.org/2000/svg">
+                                <use href="#icon_prev_sm" />
+                            </svg>
+                            <span class="fw-medium">PREV</span>
+                        </a>
+                    @endif
+                
+                    {{-- Pagination Links --}}
                     <ul class="pagination mb-0">
-                        <li class="page-item"><a class="btn-link px-1 mx-2 btn-link_active" href="#">1</a></li>
-                        <li class="page-item"><a class="btn-link px-1 mx-2" href="#">2</a></li>
-                        <li class="page-item"><a class="btn-link px-1 mx-2" href="#">3</a></li>
-                        <li class="page-item"><a class="btn-link px-1 mx-2" href="#">4</a></li>
+                        @foreach ($products->getUrlRange(1, $products->lastPage()) as $page => $url)
+                            <li class="page-item {{ $page == $products->currentPage() ? 'active' : '' }}">
+                                <a class="btn-link px-1 mx-2 {{ $page == $products->currentPage() ? 'btn-link_active' : '' }}" href="{{ $url }}">
+                                    {{ $page }}
+                                </a>
+                            </li>
+                        @endforeach
                     </ul>
-                    <a href="#" class="btn-link d-inline-flex align-items-center">
-                        <span class="fw-medium me-1">NEXT</span>
-                        <svg width="7" height="11" viewBox="0 0 7 11" xmlns="http://www.w3.org/2000/svg">
-                            <use href="#icon_next_sm" />
-                        </svg>
-                    </a>
+                
+                    {{-- Next Button --}}
+                    @if ($products->hasMorePages())
+                        <a href="{{ $products->nextPageUrl() }}" class="btn-link d-inline-flex align-items-center">
+                            <span class="fw-medium me-1">NEXT</span>
+                            <svg width="7" height="11" viewBox="0 0 7 11" xmlns="http://www.w3.org/2000/svg">
+                                <use href="#icon_next_sm" />
+                            </svg>
+                        </a>
+                    @else
+                        <a href="#" class="btn-link d-inline-flex align-items-center disabled" aria-disabled="true">
+                            <span class="fw-medium me-1">NEXT</span>
+                            <svg width="7" height="11" viewBox="0 0 7 11" xmlns="http://www.w3.org/2000/svg">
+                                <use href="#icon_next_sm" />
+                            </svg>
+                        </a>
+                    @endif
                 </nav>
             </div>
         </section>

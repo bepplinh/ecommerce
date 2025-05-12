@@ -76,7 +76,10 @@ Route::post('/product-variants/{variantId}/images', [ImageProductController::cla
 Route::get('/detail/{id}', [DetailController::class, 'showProductDetail'])->name('product.detail');
 Route::get('/get-sizes/{colorId}', [DetailController::class, 'getSizesByColor']);
 
-Route::get('/cart', [CartController::class, 'showCart'])->name('cart');
-
+Route::get('/cart/cartItemQuantity', [CartController::class, 'showCartItemQuantity'])->name('cart.cartItemQuantity');
+Route::get('cart/detail', [CartController::class, 'showCartDetail'])->name('cart.detail');
+Route::post('/cart/add/{product_id}', [CartController::class, 'addToCart'])->name('cart.add');
+Route::get('cart/remove/{id}', [CartController::class, 'removeCartItem'])->name('cart.removeCartItem');
+Route::post('/cart/update-quantity/{id}', [CartController::class, 'updateQuantity'])->name('cart.updateQuantity');
 
 

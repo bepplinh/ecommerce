@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta http-equiv="content-type" content="text/html; charset=utf-8" />
   <meta name="author" content="surfside media" />
+  <meta name="csrf-token" content="{{ csrf_token() }}">
   <link rel="shortcut icon" href="assets/images/favicon.ico" type="image/x-icon">
   <link rel="preconnect" href="https://fonts.gstatic.com/">
   <link
@@ -491,7 +492,7 @@
             </svg>
           </a>
 
-          <a href="cart.html" class="header-tools__item header-tools__cart">
+          <a href="{{route('cart.detail')}}" class="header-tools__item header-tools__cart">
             <svg class="d-block" width="20" height="20" viewBox="0 0 20 20" fill="none"
               xmlns="http://www.w3.org/2000/svg">
               <use href="#icon_cart" />
