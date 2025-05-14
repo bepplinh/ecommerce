@@ -49,7 +49,7 @@ class ImageProductController extends Controller
         // Xác thực dữ liệu từ request
         $request->validate([
             'images' => 'required|array', // Kiểm tra mảng ảnh
-            'images.*' => 'required|image|mimes:jpeg,png,jpg,gif,avif|max:2048', // Kiểm tra định dạng ảnh
+            'images.*' => 'required|image|mimes:jpg,jpeg,png,gif,webp,bmp,avif|max:2048',
             'main_image' => 'required|string', // Kiểm tra ảnh chính
         ]);
 

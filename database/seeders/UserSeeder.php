@@ -23,7 +23,7 @@ class UserSeeder extends Seeder
 
         // Normal user
         User::create([
-            'username' => 'john_doe',
+            'username' => 'user',
             'email' => 'john@example.com',
             'password' => Hash::make('123'),
             'provider' => null,

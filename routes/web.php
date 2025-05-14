@@ -80,6 +80,8 @@ Route::get('/cart/cartItemQuantity', [CartController::class, 'showCartItemQuanti
 Route::get('cart/detail', [CartController::class, 'showCartDetail'])->name('cart.detail');
 Route::post('/cart/add/{product_id}', [CartController::class, 'addToCart'])->name('cart.add');
 Route::get('cart/remove/{id}', [CartController::class, 'removeCartItem'])->name('cart.removeCartItem');
-Route::post('/cart/update-quantity/{id}', [CartController::class, 'updateQuantity'])->name('cart.updateQuantity');
+Route::put('cart/decrease/{id}', [CartController::class, 'decreaseQuantity'])->name('cart.decreaseQuantity');
+Route::put('cart/increase/{id}', [CartController::class, 'increaseQuantity'])->name('cart.increaseQuantity');
+
 
 

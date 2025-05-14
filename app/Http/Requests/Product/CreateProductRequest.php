@@ -29,7 +29,7 @@ class CreateProductRequest extends FormRequest
             'status' => 'required|in:active,inactive',
             'category_id' => 'required|exists:categories,id',
             'brand_id' => 'required|exists:brands,id',
-            'image' => 'required|image|mimes:jpg,jpeg,png,gif|max:2048',
+            'image' => 'required|image|mimes:jpg,jpeg,png,gif,webp,bmp,avif|max:2048',
             'variants' => 'required|array', 
             'variants.*.color_id' => 'required|exists:colors,id', 
             'variants.*.size_id' => 'required|exists:sizes,id',  

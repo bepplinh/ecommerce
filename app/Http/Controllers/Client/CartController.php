@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Client;
 
+use App\Models\CartItem;
 use Illuminate\Http\Request;
 use App\Models\ProductVariants;
 use Illuminate\Routing\Controller;
@@ -33,11 +34,21 @@ class CartController extends Controller
         $cart = $user->cart()->where('status', 'active')->first();
 
         if (!$cart) {
-            return redirect()->back()->with('error', 'Giỏ hàng của bạn đang trống.');
+            $cart = $user->cart()->create(['status' => 'active']);
+            $cartItems = [];  // Giỏ hàng trống
+        } else {
+            $cartItems = $cart->cartItems()->with('productVariants.product')->get();
+            $subtotal_Cart = $cartItems->reduce(function ($carry, $item) {
+                $price = $item->productVariants->product->discount
+                    ? $item->productVariants->product->sale_price 
+                    : $item->productVariants->product->price;
+        
+                return $carry + ($price * $item->quantity);
+            }, 0);
         }
 
-        $cartItems = $cart->cartItems()->with('productVariants.product')->get();
-        return view('client.cart', compact('cartItems'));
+        // Trả về view giỏ hàng với thông báo nếu cần
+        return view('client.cart', compact('cartItems', 'subtotal_Cart'));
     }
 
     public function addToCart(Request $request, $product_id)
@@ -87,6 +98,7 @@ class CartController extends Controller
         ]);
     }
 
+
     public function removeCartItem($id)
     {
         $user = Auth::user();
@@ -106,37 +118,72 @@ class CartController extends Controller
         }
     }
 
-    public function updateQuantity(Request $request, $id)
+    public function increaseQuantity($id)
     {
         $user = Auth::user();
 
         if (!$user) {
-            return response()->json(['success' => false, 'message' => 'Bạn cần đăng nhập để thực hiện thao tác này.'], 401);
+            return redirect()->route('login')->with('error', 'Bạn cần đăng nhập để thay đổi số lượng.');
         }
 
-        $cartItem = $user->cart->cartItems()->find($id);
+        // Find the cart item and increase quantity
+        $cartItem = $user->cart()->where('status', 'active')->first()->cartItems()->find($id);
 
-        if (!$cartItem) {
-            return response()->json(['success' => false, 'message' => 'Không tìm thấy mục giỏ hàng.'], 404);
+        if ($cartItem) {
+            $cartItem->quantity += 1;
+        
+            // Kiểm tra sự tồn tại của sale_price và discount
+            if ($cartItem->productVariants && $cartItem->productVariants->product) {
+                $product = $cartItem->productVariants->product;
+                
+                // Kiểm tra xem có discount hay không, nếu có thì sử dụng sale_price, nếu không thì dùng price
+                $cartItem->price = $product->discount
+                    ? ($product->sale_price ?? $product->price) * $cartItem->quantity
+                    : $product->price * $cartItem->quantity;
+            }
+        
+            // Lưu lại thay đổi
+            $cartItem->save();
         }
 
-        $validatedData = $request->validate([
-            'quantity' => 'required|integer|min:1',
+        return redirect()->back()->with('toastr', [
+            'status' => 'success',
+            'message' => 'Số lượng đã được cập nhật.',
         ]);
+    }
 
-        // Cập nhật số lượng và tổng giá trị
-        $cartItem->quantity = $validatedData['quantity'];
-        $cartItem->price = $cartItem->quantity * $cartItem->productVariants->product->price;
-        $cartItem->save();
+    // Decrease quantity of an item in the cart
+    public function decreaseQuantity($id)
+    {
+        $user = Auth::user();
 
-        // Tính toán tổng giá trị giỏ hàng
-        $cart = $user->cart;
-        $total = $cart->cartItems->sum('price');
+        if (!$user) {
+            return redirect()->route('login')->with('error', 'Bạn cần đăng nhập để thay đổi số lượng.');
+        }
 
-        return response()->json([
-            'success' => true,
-            'subtotal' => number_format($cartItem->price, 2),
-            'total' => number_format($total, 2),
+        // Find the cart item and decrease quantity
+        $cartItem = $user->cart()->where('status', 'active')->first()->cartItems()->find($id);
+
+        if ($cartItem && $cartItem->quantity > 1) {
+            $cartItem->quantity -= 1;
+        
+            // Kiểm tra sự tồn tại của sale_price và discount
+            if ($cartItem->productVariants && $cartItem->productVariants->product) {
+                $product = $cartItem->productVariants->product;
+                
+                // Kiểm tra xem có discount hay không, nếu có thì sử dụng sale_price, nếu không thì dùng price
+                $cartItem->price = $product->discount
+                    ? ($product->sale_price ?? $product->price) * $cartItem->quantity
+                    : $product->price * $cartItem->quantity;
+            }
+        
+            // Lưu lại thay đổi
+            $cartItem->save();
+        }
+
+        return redirect()->back()->with('toastr', [
+            'status' => 'success',
+            'message' => 'Số lượng đã được cập nhật.',
         ]);
     }
 }

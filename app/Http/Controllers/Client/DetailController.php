@@ -17,7 +17,14 @@ class DetailController extends Controller
             'productVariants.images',
         ])->findOrFail($id);
 
-        return view('client.detail', compact('product'));
-    }
+        // Nhóm các productVariants theo color
+        $colorsWithImages = $product->productVariants->groupBy('color_id')->map(function ($variants) {
+            return [
+                'color' => $variants->first()->color,
+                'images' => $variants->pluck('images')->flatten(),
+            ];
+        });
 
+        return view('client.detail', compact('product', 'colorsWithImages'));
+    }
 }
