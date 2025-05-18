@@ -1,17 +1,45 @@
 @extends('layout.clientApp')
 @push('styles')
-{{-- <link rel="stylesheet" href="{{ asset('css/style.css') }}"> --}}
+{{--
+<link rel="stylesheet" href="{{ asset('css/style.css') }}"> --}}
 <link rel="stylesheet" href="{{ asset('css/header.css') }}">
 @endpush
-@section('head')
+@push('styles')
 <style>
   button {
     background-color: #222222;
     color: white;
     height: 65px;
   }
+
+  .social-login-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: transform 0.15s, box-shadow 0.15s;
+    font-size: 22px;
+  }
+
+  .social-login-btn:hover {
+    transform: scale(1.08);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    opacity: 0.92;
+  }
+
+  .social-login-btn.facebook {
+    background: #3b5998;
+  }
+
+  .social-login-btn.google {
+    background: #DB4437;
+  }
 </style>
-@endsection
+@endpush
 @section('content')
 <main class="pt-90 d-flex justify-content-center">
   <div class="mb-4 pb-4"></div>
@@ -50,13 +78,11 @@
             </div>
 
             <div class="text-center d-flex justify-content-center gap-3">
-              <a href="#" class="btn border rounded-circle d-flex align-items-center justify-content-center"
-                style="width: 40px; height: 40px; background-color: #3b5998;">
-                <i class="fa-brands fa-facebook-f text-white" style="font-size: 20px;"></i>
+              <a href="#" class="social-login-btn facebook">
+                <i class="fa-brands fa-facebook-f text-white"></i>
               </a>
-              <a href="{{ route('login.google') }}" class="btn border rounded-circle d-flex align-items-center justify-content-center"
-                style="width: 40px; height: 40px; background-color: #DB4437;">
-                <i class="fa-brands fa-google text-white" style="font-size: 20px;"></i>
+              <a href="{{ route('login.google') }}" class="social-login-btn google">
+                <i class="fa-brands fa-google text-white"></i>
               </a>
             </div>
 

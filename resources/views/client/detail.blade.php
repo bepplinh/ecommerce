@@ -264,7 +264,6 @@
 
                             <script>
                                 document.addEventListener('DOMContentLoaded', function() {
-                                    // Initialize Swiper
                                     const mainSwiper = new Swiper('.product-single__image .swiper-container', {
                                         navigation: {
                                             nextEl: '.swiper-button-next',
@@ -272,34 +271,26 @@
                                         },
                                     });
 
-                                    // Function to show images for a specific color
                                     function showImagesForColor(colorId) {
-                                        // Hide all images first
                                         document.querySelectorAll('.swiper-slide.product-single__image-item').forEach(slide => {
                                             slide.style.display = 'none';
                                         });
 
-                                        // Show images for selected color
                                         const colorImages = document.querySelectorAll(`.swiper-slide[data-color-id="${colorId}"]`);
                                         colorImages.forEach(slide => {
                                             slide.style.display = 'block';
                                         });
-
-                                        // Update Swiper
                                         mainSwiper.update();
                                         mainSwiper.slideTo(0);
                                     }
 
-                                    // Function to show sizes for a specific color
                                     function showSizesForColor(colorId) {
                                         const sizesContainer = document.getElementById('sizes');
-                                        sizesContainer.innerHTML = ''; // Clear existing sizes
+                                        sizesContainer.innerHTML = '';
 
-                                        // Get all variants for the selected color
                                         const colorVariants = @json($product->productVariants);
                                         const colorSizes = colorVariants.filter(variant => variant.color_id == colorId);
 
-                                        // Create size options
                                         colorSizes.forEach(variant => {
                                             const sizeBoxWrapper = document.createElement('div');
                                             sizeBoxWrapper.classList.add('size-option-wrapper');

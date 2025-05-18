@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Client;
 
+use App\Models\CartItem;
 use Illuminate\Http\Request;
 use App\Models\ProductVariants;
 use Illuminate\Routing\Controller;
@@ -9,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
 {
-    public function showCartItemQuantity()
+    public function showCart()
     {
         $user = Auth::user();
         $cart = $user->cart()->where('status', 'active')->first();
@@ -21,7 +22,6 @@ class CartController extends Controller
         return view('layout.clientApp', compact('totalQuantity'));
     }
 
-
     public function showCartDetail()
     {
         $user = Auth::user();
@@ -30,13 +30,15 @@ class CartController extends Controller
             return redirect()->route('login')->with('error', 'Bạn cần đăng nhập để xem giỏ hàng.');
         }
 
-        $cart = $user->cart()->where('status', 'active')->first();
+        // Sử dụng whereHas để kiểm tra và lấy giỏ hàng
+        $cartItems = CartItem::whereHas('cart', function ($query) use ($user) {
+            $query->where('user_id', $user->id)->where('status', 'active');
+        })->with('productVariants.product')->get();
 
-        if (!$cart) {
+        if ($cartItems->isEmpty()) {
             return redirect()->back()->with('error', 'Giỏ hàng của bạn đang trống.');
         }
 
-        $cartItems = $cart->cartItems()->with('productVariants.product')->get();
         return view('client.cart', compact('cartItems'));
     }
 
@@ -73,7 +75,6 @@ class CartController extends Controller
             $cartItem->price = $price * $cartItem->quantity;
             $cartItem->save();
         } else {
-
             $cart->cartItems()->create([
                 'product_variant_id' => $productVariant->id,
                 'quantity' => $validatedData['quantity'],
@@ -89,54 +90,42 @@ class CartController extends Controller
 
     public function removeCartItem($id)
     {
-        $user = Auth::user();
+        $cartItem = CartItem::findOrFail($id);
+        $cartItem->delete();
 
-        if (!$user) {
-            return redirect()->route('login')->with('error', 'Bạn cần đăng nhập để xóa sản phẩm khỏi giỏ hàng.');
-        }
-
-        $cartItem = $user->cart()->where('status', 'active')->first()->cartItems()->find($id);
-
-        if ($cartItem) {
-            $cartItem->delete();
-            return redirect()->back()->with('toastr', [
-                'status' => 'success',
-                'message' => 'Product removed from cart successfully.',
-            ]);
-        }
+        return redirect()->back()->with('toastr', [
+            'status' => 'success',
+            'message' => 'Product removed from cart successfully.',
+        ]);
     }
 
-    public function updateQuantity(Request $request, $id)
+    public function increaseQty($id)
     {
-        $user = Auth::user();
-
-        if (!$user) {
-            return response()->json(['success' => false, 'message' => 'Bạn cần đăng nhập để thực hiện thao tác này.'], 401);
+        $cartItem = CartItem::findOrFail($id);
+        $cartItem->quantity += 1;
+        if ($cartItem->productVariants->product->discount) {
+            $cartItem->price = $cartItem->productVariants->product->sale_price * $cartItem->quantity;
+        } else {
+            $cartItem->price = $cartItem->productVariants->product->price * $cartItem->quantity;
         }
-
-        $cartItem = $user->cart->cartItems()->find($id);
-
-        if (!$cartItem) {
-            return response()->json(['success' => false, 'message' => 'Không tìm thấy mục giỏ hàng.'], 404);
-        }
-
-        $validatedData = $request->validate([
-            'quantity' => 'required|integer|min:1',
-        ]);
-
-        // Cập nhật số lượng và tổng giá trị
-        $cartItem->quantity = $validatedData['quantity'];
-        $cartItem->price = $cartItem->quantity * $cartItem->productVariants->product->price;
         $cartItem->save();
 
-        // Tính toán tổng giá trị giỏ hàng
-        $cart = $user->cart;
-        $total = $cart->cartItems->sum('price');
+        return redirect()->back();
+    }
 
-        return response()->json([
-            'success' => true,
-            'subtotal' => number_format($cartItem->price, 2),
-            'total' => number_format($total, 2),
-        ]);
+    public function decreaseQty($id)
+    {
+        $cartItem = CartItem::findOrFail($id);
+        if ($cartItem->quantity > 1) {
+            $cartItem->quantity -= 1;
+            if ($cartItem->productVariants->product->discount) {
+                $cartItem->price = $cartItem->productVariants->product->sale_price * $cartItem->quantity;
+            } else {
+                $cartItem->price = $cartItem->productVariants->product->price * $cartItem->quantity;
+            }
+            $cartItem->save();
+        }
+
+        return redirect()->back();
     }
 }

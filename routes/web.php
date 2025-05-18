@@ -13,6 +13,7 @@ use App\Http\Controllers\Product\SizeController;
 use App\Http\Controllers\auth\RegisterController;
 use App\Http\Controllers\Client\DetailController;
 use App\Http\Controllers\Product\ColorController;
+use App\Http\Controllers\Client\CheckoutController;
 use App\Http\Controllers\Product\ProductController;
 use App\Http\Controllers\Product\DiscountController;
 use App\Http\Controllers\Category\CategoryController;
@@ -68,18 +69,27 @@ Route::get('login/google/callback', [SocialController::class, 'handleGoogleCallb
 
 Route::get('/shop', [ShopController::class, 'index'])->name('shop');
 
-Route::get('/test', [ImageProductController::class, 'index'])->name('product.images.index');
+Route::get('/image/product/index', [ImageProductController::class, 'index'])->name('product.images.index');
 Route::get('/image/{product}/edit', [ImageProductController::class, 'edit'])->name('productImage.edit');
 Route::get('/product-variants/{variant}/images/create', [ImageProductController::class, 'create'])->name('product.images.create');
 Route::post('/product-variants/{variantId}/images', [ImageProductController::class, 'store'])->name('product.images.store');
 
-Route::get('/detail/{id}', [DetailController::class, 'showProductDetail'])->name('product.detail');
+Route::get('/detail/{slug}', [DetailController::class, 'showProductDetail'])->name('product.detail');
 Route::get('/get-sizes/{colorId}', [DetailController::class, 'getSizesByColor']);
 
 Route::get('/cart/cartItemQuantity', [CartController::class, 'showCartItemQuantity'])->name('cart.cartItemQuantity');
 Route::get('cart/detail', [CartController::class, 'showCartDetail'])->name('cart.detail');
 Route::post('/cart/add/{product_id}', [CartController::class, 'addToCart'])->name('cart.add');
 Route::get('cart/remove/{id}', [CartController::class, 'removeCartItem'])->name('cart.removeCartItem');
-Route::post('/cart/update-quantity/{id}', [CartController::class, 'updateQuantity'])->name('cart.updateQuantity');
+Route::put('cart/increase-qty/{id}', [CartController::class, 'increaseQty'])->name('cart.increaseQty');
+Route::put('cart/decrease-qty/{id}', [CartController::class, 'decreaseQty'])->name('cart.decreaseQty');
+Route::get('cart/checkout', [CheckoutController::class, 'showCheckout'])->name('cart.checkout');
+Route::get('cart/checkout/information', [CheckoutController::class, 'showInformation'])->name('cart.information');
 
+Route::get('test', function () {
+    return view('order.order')->with([
+        'title' => 'test',
+        'heading' => 'test',
+    ]);
+})->name('test');
 
