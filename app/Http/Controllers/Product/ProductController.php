@@ -24,7 +24,6 @@ class ProductController extends Controller
 
         $query = Product::query();
 
-        // Search functionality
         if ($request->has('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
@@ -33,7 +32,6 @@ class ProductController extends Controller
             });
         }
 
-        // Sorting functionality
         switch ($request->sort) {
             case 'name_asc':
                 $query->orderBy('name', 'asc');
@@ -127,16 +125,6 @@ class ProductController extends Controller
         ]);
     }
 
-    // public function show($id)
-    // {
-    //     $product = Product::findOrFail($id);
-    //     return view('client.detail')->with([
-    //         'product' => $product,
-    //         'title' => 'Product Details',
-    //         'heading' => 'Product Details',
-    //     ]);
-    // }
-
     public function edit($id)
     {
         $product = Product::findOrFail($id);
@@ -163,20 +151,54 @@ class ProductController extends Controller
         $request->validated();
         $product = Product::findOrFail($id);
 
-        $productCode = $request->code;
-        $productName = $request->name;
-
-        $imageName = $productCode . '_' . Str::slug($productName) . '.' . $request->file('image')->getClientOriginalExtension();
-
         if ($request->hasFile('image')) {
-            if ($product->image_url && Storage::exists('public/product/thumbnail/' . $product->image_url)) {
-                Storage::delete('public/product/thumbnail/' . $product->image_url);
+            $productCode = $request->code;
+            $productName = $request->name;
+
+            $imageName = $productCode . '_' . Str::slug($productName) . '.' . $request->file('image')->getClientOriginalExtension();
+            if ($product->image_url && Storage::exists('public/product/thumbnail/' . basename($product->image_url))) {
+                Storage::delete('public/product/thumbnail/' . basename($product->image_url));
             }
             $imagePath = $request->file('image')->storeAs('product/thumbnail', $imageName, 'public');
             $product->image_url = Storage::url($imagePath);
         }
 
+        $product->name = $request->name;
+        $product->code = $request->code;
+        $product->description = $request->description;
+        $product->price = (int) str_replace(['.', ','], '', $request->price);
+        $product->status = $request->status;
+        $product->category_id = $request->category_id;
+        $product->brand_id = $request->brand_id;
         $product->save();
+
+        if ($request->has('variants')) {
+            foreach ($request->variants as $variant) {
+                if (!empty($variant['id'])) {
+                    $productVariant = ProductVariants::find($variant['id']);
+                    if ($productVariant) {
+                        $productVariant->update([
+                            'color_id' => $variant['color_id'],
+                            'size_id' => $variant['size_id'],
+                            'stock' => $variant['stock'],
+                        ]);
+                    }
+                } else {
+                    ProductVariants::create([
+                        'product_id' => $product->id,
+                        'color_id' => $variant['color_id'],
+                        'size_id' => $variant['size_id'],
+                        'stock' => $variant['stock'],
+                    ]);
+                }
+            }
+        }
+
+        if ($request->has('deleted_variants')) {
+            foreach ($request->deleted_variants as $variantId) {
+                ProductVariants::where('id', $variantId)->delete();
+            }
+        }
 
         return redirect()->route('products.index')->with('toastr', [
             'status' => 'success',

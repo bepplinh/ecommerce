@@ -57,9 +57,10 @@
                                         <div class="form-group">
                                             <label for="price" class="form-label">Giá (VNĐ) <span
                                                     class="text-danger">*</span></label>
-                                                    <input type="text" class="form-control @error('price') is-invalid @enderror" id="price"
-                                                    name="price" value="{{ old('price', number_format($product->price)) }}" required 
-                                                    oninput="formatPrice(this)">
+                                            <input type="text" class="form-control @error('price') is-invalid @enderror"
+                                                id="price" name="price"
+                                                value="{{ old('price', number_format($product->price)) }}" required
+                                                oninput="formatPrice(this)">
                                             @error('price')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
@@ -80,7 +81,8 @@
                                                     data-value="{{ $discount->value }}"
                                                     data-percentage="{{ $discount->percentage }}">
                                                     {{ $discount->name }}
-                                                    ({{ $discount->type === 'fixed' ? number_format($discount->value, 0, ',', '.') . ' VNĐ' : $discount->value . '%' }})
+                                                    ({{ $discount->type === 'fixed' ? number_format($discount->value, 0,
+                                                    ',', '.') . ' VNĐ' : $discount->value . '%' }})
                                                 </option>
                                                 @endforeach
                                             </select>
@@ -169,26 +171,25 @@
 
                                     <div class="mb-3">
                                         <label for="image" class="form-label">Hình ảnh sản phẩm</label>
-                                        <input type="file" class="form-control @error('image') is-invalid @enderror" name="image"
-                                               id="image" accept="image/*">
+                                        <input type="file" class="form-control @error('image') is-invalid @enderror"
+                                            name="image" id="image" accept="image/*">
                                         <div class="form-text">Chỉ có thể chọn một ảnh. Định dạng: JPG, PNG, GIF</div>
-                                    
+
                                         <div id="image-preview" class="mt-2">
                                             @if($product->image_url)
-                                                <div class="current-image" id="current-image">
-                                                    <!-- Hiển thị ảnh hiện tại của sản phẩm -->
-                                                    <img src="{{ asset($product->image_url) }}" 
-                                                         class="img-thumbnail" 
-                                                         style="width: 150px; height: 150px; object-fit: cover;">
-                                                    <div class="mt-2">
-                                                        <small class="text-muted">Ảnh hiện tại</small>
-                                                    </div>
+                                            <div class="current-image" id="current-image">
+                                                <!-- Hiển thị ảnh hiện tại của sản phẩm -->
+                                                <img src="{{ asset($product->image_url) }}" class="img-thumbnail"
+                                                    style="width: 150px; height: 150px; object-fit: cover;">
+                                                <div class="mt-2">
+                                                    <small class="text-muted">Ảnh hiện tại</small>
                                                 </div>
+                                            </div>
                                             @endif
                                         </div>
-                                    
+
                                         @error('image')
-                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
                                 </div>
@@ -267,6 +268,45 @@
                     </div>
                 </div>
 
+                <!-- Update the variant template structure -->
+                <template id="variant-template">
+                    <tr class="variant-row">
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="color-dot"
+                                    style="width: 18px; height: 18px; border-radius: 50%; background-color: #ffffff; border: 1px solid #ddd;">
+                                </div>
+                                <select name="variants[__INDEX__][color_id]"
+                                    class="form-select form-select-sm color-select" required>
+                                    <option value="">-- Chọn màu --</option>
+                                    @foreach($colors as $color)
+                                    <option value="{{ $color->id }}" data-hex="{{ $color->hex_code }}">{{ $color->name
+                                        }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </td>
+                        <td>
+                            <select name="variants[__INDEX__][size_id]" class="form-select form-select-sm" required>
+                                <option value="">-- Chọn size --</option>
+                                @foreach($sizes as $size)
+                                <option value="{{ $size->id }}">{{ $size->name }}</option>
+                                @endforeach
+                            </select>
+                        </td>
+                        <td>
+                            <input type="number" name="variants[__INDEX__][stock]" class="form-control form-control-sm"
+                                value="0" required>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-sm btn-danger remove-variant">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                            <input type="hidden" name="variants[__INDEX__][id]" value="">
+                        </td>
+                    </tr>
+                </template>
+
                 <div class="d-flex justify-content-end mt-4">
                     <button type="button" class="btn btn-secondary me-2" onclick="history.back()">Hủy</button>
                     <button type="submit" class="btn btn-primary">
@@ -278,67 +318,6 @@
     </div>
 </div>
 
-<!-- Update the variant template structure -->
-<template id="variant-template">
-    <tr class="variant-row">
-        <td>
-            <div class="d-flex align-items-center gap-2">
-                <div class="color-dot"
-                    style="width: 18px; height: 18px; border-radius: 50%; background-color: #ffffff; border: 1px solid #ddd;">
-                </div>
-                <select name="variants[__INDEX__][color_id]" class="form-select form-select-sm color-select" required>
-                    <option value="">-- Chọn màu --</option>
-                    @foreach($colors as $color)
-                    <option value="{{ $color->id }}" data-hex="{{ $color->hex_code }}">{{ $color->name }}</option>
-                    @endforeach
-                </select>
-            </div>
-        </td>
-        <td>
-            <select name="variants[__INDEX__][size_id]" class="form-select form-select-sm" required>
-                <option value="">-- Chọn size --</option>
-                @foreach($sizes as $size)
-                <option value="{{ $size->id }}">{{ $size->name }}</option>
-                @endforeach
-            </select>
-        </td>
-        <td>
-            <input type="number" name="variants[__INDEX__][stock]" class="form-control form-control-sm" value="0"
-                required>
-        </td>
-        <td>
-            <button type="button" class="btn btn-sm btn-danger remove-variant">
-                <i class="fas fa-trash"></i>
-            </button>
-            <input type="hidden" name="variants[__INDEX__][id]" value="">
-        </td>
-    </tr>
-</template>
-
-<!-- Update the JavaScript for adding variants -->
-@push('scripts')
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        let variantIndex = {{ count($product->productVariants) }};
-        
-        document.getElementById('add-variant').addEventListener('click', function() {
-            const template = document.getElementById('variant-template').innerHTML;
-            const newRow = template.replace(/__INDEX__/g, variantIndex);
-            document.querySelector('#variants-table tbody').insertAdjacentHTML('beforeend', newRow);
-            
-            // Initialize color select for the new row
-            const newColorSelect = document.querySelector(`#variants-table tbody tr:last-child select[name="variants[${variantIndex}][color_id]"]`);
-            newColorSelect.addEventListener('change', function() {
-                const hex = this.options[this.selectedIndex].dataset.hex || '#ffffff';
-                const dot = this.closest('div').querySelector('.color-dot');
-                dot.style.backgroundColor = hex;
-            });
-            
-            variantIndex++;
-        });
-    });
-</script>
-@endpush
 
 <script>
     document.getElementById('image').addEventListener('change', function (e) {
@@ -396,9 +375,9 @@
 
 <script>
     function formatPrice(input) {
-    var value = input.value.replace(/\D/g, '');  // Xóa các ký tự không phải số
-    input.value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ",");  // Thêm dấu phẩy sau mỗi 3 chữ số
-}
+        var value = input.value.replace(/\D/g, '');  // Xóa các ký tự không phải số
+        input.value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ",");  // Thêm dấu phẩy sau mỗi 3 chữ số
+    }
     // Preview hình ảnh chính
     function previewImage(input) {
         if (input.files && input.files[0]) {
@@ -445,6 +424,15 @@
         if (e.target.classList.contains('remove-variant') || e.target.closest('.remove-variant')) {
             if (confirm('Bạn có chắc chắn muốn xóa biến thể này?')) {
                 const row = e.target.closest('.variant-row');
+                // Khi bấm nút xoá biến thể
+                const idInput = row.querySelector('input[name$="[id]"]');
+                if (idInput && idInput.value) {
+                    const deletedInput = document.createElement('input');
+                    deletedInput.type = 'hidden';
+                    deletedInput.name = 'deleted_variants[]';
+                    deletedInput.value = idInput.value;
+                    document.querySelector('form').appendChild(deletedInput);
+                }
                 row.remove();
             }
         }

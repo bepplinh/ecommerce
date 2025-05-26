@@ -22,7 +22,7 @@ class DiscountSeeder extends Seeder
         Discount::create([
             'name' => 'Black Friday Discount',
             'type' => 'fixed',
-            'value' => 50.00,
+            'value' => 50000,
             'start_at' => now()->subDays(5),
             'end_at' => now()->addDays(5),
             'status' => 'active',

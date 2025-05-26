@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
 
 class ProductVariants extends Model
@@ -19,7 +20,7 @@ class ProductVariants extends Model
     }
 
     public function size()
-    {
+    {   
         return $this->belongsTo(Size::class, 'size_id');
     }
 
@@ -35,5 +36,15 @@ class ProductVariants extends Model
     public function cartItems()
     {
         return $this->hasMany(CartItem::class, 'product_variant_id');
+    }
+
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class, 'product_variant_id');
+    }
+
+    public function getSlugAtribute()
+    {
+        return Str::slug($this->product->name . '-' . $this->size->name . '-' . $this->color->name);
     }
 }

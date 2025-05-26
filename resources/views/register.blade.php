@@ -1,5 +1,5 @@
 @extends('layout.clientApp')
-@section('head')
+@push('styles')
     <style>
         .register-form {
             width: 80%;
@@ -12,7 +12,7 @@
             height: 65px;
         }
     </style>
-@endsection
+@endpush
 @section('content')
     <main class="pt-90">
         <div class="mb-4 pb-4"></div>
@@ -30,7 +30,6 @@
                     <div class="register-form">
                         <form method="POST" action="{{ route('register') }}" name="register-form" class="needs-validation" novalidate="">
                             @csrf
-
                             <div class="form-floating mb-3">
                                 <input class="form-control form-control_gray " name="username" value="" required=""
                                     autocomplete="username" autofocus="">

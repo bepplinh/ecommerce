@@ -37,7 +37,7 @@ class Product extends Model
 
     public function productVariants()
     {
-        return $this->hasMany(ProductVariants::class);
+        return $this->hasMany(ProductVariants::class, 'product_id');
     }
 
     public function getSalePriceAttribute()

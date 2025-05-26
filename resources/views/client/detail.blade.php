@@ -1,97 +1,6 @@
 @extends('layout.clientApp')
 @push('styles')
-    <style>
-        .old-price {
-            font-size: 13px;
-        }
-
-        .product-single__category {
-            font-size: 16px;
-            color: #666;
-            margin-top: -5px;
-            margin-bottom: 2px;
-        }
-
-        .qty-control {
-            margin-right: 11px;
-        }
-
-        .size-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .size-option-wrapper {
-            position: relative;
-        }
-
-        .size-radio {
-            position: absolute;
-            opacity: 0;
-            cursor: pointer;
-        }
-
-        .size-box {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 45px;
-            height: 45px;
-            border: 1px solid #e0e0e0;
-            font-size: 16px;
-            font-weight: 400;
-            cursor: pointer;
-            margin-bottom: 0;
-            transition: all 0.3s ease;
-        }
-
-        .size-radio:checked+.size-box {
-            border: 1px solid #000;
-            font-weight: 500;
-        }
-
-        .size-radio:focus+.size-box {
-            box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
-        }
-
-        /* XXL size is typically wider */
-        label[for="sizeXXL"].size-box {
-            width: 80px;
-        }
-
-        .size-guide {
-            font-size: 0.875rem;
-        }
-
-        .color-option-wrapper {
-            position: relative;
-        }
-
-        .color-radio {
-            position: absolute;
-            opacity: 0;
-            cursor: pointer;
-        }
-
-        .color-box {
-            padding: 8px 16px;
-            border: 1px solid #e0e0e0;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .color-radio:checked+.color-box {
-            border: 1px solid #000;
-            background-color: #f8f9fa;
-        }
-
-        .color-radio:focus+.color-box {
-            box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
-        }
-    </style>
+<link rel="stylesheet" href="{{ asset('/css/detail/detail.css') }}">
 @endpush
 @section('content')
     <main class="pt-90">
@@ -264,7 +173,6 @@
 
                             <script>
                                 document.addEventListener('DOMContentLoaded', function() {
-                                    // Initialize Swiper
                                     const mainSwiper = new Swiper('.product-single__image .swiper-container', {
                                         navigation: {
                                             nextEl: '.swiper-button-next',
@@ -272,7 +180,6 @@
                                         },
                                     });
 
-                                    // Function to show images for a specific color
                                     function showImagesForColor(colorId) {
                                         // Hide all images first
                                         document.querySelectorAll('.swiper-slide.product-single__image-item').forEach(slide => {
@@ -285,21 +192,24 @@
                                             slide.style.display = 'block';
                                         });
 
-                                        // Update Swiper
+                                        // Tìm index của slide đầu tiên có màu này
+                                        const allSlides = Array.from(document.querySelectorAll('.swiper-slide.product-single__image-item'));
+                                        const firstColorSlide = allSlides.findIndex(slide => slide.getAttribute('data-color-id') == colorId);
+
+                                        // Update Swiper và nhảy đến đúng slide
                                         mainSwiper.update();
-                                        mainSwiper.slideTo(0);
+                                        if (firstColorSlide !== -1) {
+                                            mainSwiper.slideTo(firstColorSlide);
+                                        }
                                     }
 
-                                    // Function to show sizes for a specific color
                                     function showSizesForColor(colorId) {
                                         const sizesContainer = document.getElementById('sizes');
-                                        sizesContainer.innerHTML = ''; // Clear existing sizes
+                                        sizesContainer.innerHTML = '';
 
-                                        // Get all variants for the selected color
                                         const colorVariants = @json($product->productVariants);
                                         const colorSizes = colorVariants.filter(variant => variant.color_id == colorId);
 
-                                        // Create size options
                                         colorSizes.forEach(variant => {
                                             const sizeBoxWrapper = document.createElement('div');
                                             sizeBoxWrapper.classList.add('size-option-wrapper');
@@ -422,9 +332,15 @@
                     slide.style.display = 'block';
                 });
 
-                // Update Swiper
+                // Tìm index của slide đầu tiên có màu này
+                const allSlides = Array.from(document.querySelectorAll('.swiper-slide.product-single__image-item'));
+                const firstColorSlide = allSlides.findIndex(slide => slide.getAttribute('data-color-id') == colorId);
+
+                // Update Swiper và nhảy đến đúng slide
                 mainSwiper.update();
-                mainSwiper.slideTo(0);
+                if (firstColorSlide !== -1) {
+                    mainSwiper.slideTo(firstColorSlide);
+                }
             }
 
             // Function to show sizes for a specific color

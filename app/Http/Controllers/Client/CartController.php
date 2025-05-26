@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Client;
 
 use App\Models\CartItem;
+use App\Models\Shipping_Address;
 use Illuminate\Http\Request;
 use App\Models\ProductVariants;
 use Illuminate\Routing\Controller;
@@ -10,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
 {
-    public function showCartItemQuantity()
+    public function showCart()
     {
         $user = Auth::user();
         $cart = $user->cart()->where('status', 'active')->first();
@@ -22,7 +23,6 @@ class CartController extends Controller
         return view('layout.clientApp', compact('totalQuantity'));
     }
 
-
     public function showCartDetail()
     {
         $user = Auth::user();
@@ -31,24 +31,17 @@ class CartController extends Controller
             return redirect()->route('login')->with('error', 'Bạn cần đăng nhập để xem giỏ hàng.');
         }
 
-        $cart = $user->cart()->where('status', 'active')->first();
+        $shipping_addresses = Shipping_Address::where('user_id', $user->id)->get();
 
-        if (!$cart) {
-            $cart = $user->cart()->create(['status' => 'active']);
-            $cartItems = [];  // Giỏ hàng trống
-        } else {
-            $cartItems = $cart->cartItems()->with('productVariants.product')->get();
-            $subtotal_Cart = $cartItems->reduce(function ($carry, $item) {
-                $price = $item->productVariants->product->discount
-                    ? $item->productVariants->product->sale_price 
-                    : $item->productVariants->product->price;
-        
-                return $carry + ($price * $item->quantity);
-            }, 0);
-        }
+        // Lấy cart items chỉ thuộc cart chưa completed
+        $cartItems = CartItem::whereHas('cart', function ($query) use ($user) {
+            $query->where('user_id', $user->id)
+                  ->where('status', '!=', 'completed');
+        })
+        ->with('productVariants.product')
+        ->get();
 
-        // Trả về view giỏ hàng với thông báo nếu cần
-        return view('client.cart', compact('cartItems', 'subtotal_Cart'));
+        return view('client.cart', compact('cartItems', 'shipping_addresses'));
     }
 
     public function addToCart(Request $request, $product_id)
@@ -66,10 +59,7 @@ class CartController extends Controller
             'quantity' => 'required|integer|min:1',
         ]);
 
-        $productVariant = ProductVariants::where('product_id', $product_id)
-            ->where('color_id', $validatedData['color'])
-            ->where('size_id', $validatedData['size'])
-            ->first();
+        $productVariant = ProductVariants::where('product_id', $product_id)->where('color_id', $validatedData['color'])->where('size_id', $validatedData['size'])->first();
 
         if (!$productVariant) {
             return redirect()->back()->with('error', 'Không tìm thấy sản phẩm với kích thước và màu sắc đã chọn.');
@@ -84,7 +74,6 @@ class CartController extends Controller
             $cartItem->price = $price * $cartItem->quantity;
             $cartItem->save();
         } else {
-
             $cart->cartItems()->create([
                 'product_variant_id' => $productVariant->id,
                 'quantity' => $validatedData['quantity'],
@@ -92,98 +81,88 @@ class CartController extends Controller
             ]);
         }
 
-        return redirect()->back()->with('toastr', [
-            'status' => 'success',
-            'message' => 'Product added to cart successfully.',
-        ]);
+        return redirect()
+            ->back()
+            ->with('toastr', [
+                'status' => 'success',
+                'message' => 'Product added to cart successfully.',
+            ]);
     }
-
 
     public function removeCartItem($id)
     {
-        $user = Auth::user();
+        $cartItem = CartItem::findOrFail($id);
+        $cartItem->delete();
 
-        if (!$user) {
-            return redirect()->route('login')->with('error', 'Bạn cần đăng nhập để xóa sản phẩm khỏi giỏ hàng.');
-        }
-
-        $cartItem = $user->cart()->where('status', 'active')->first()->cartItems()->find($id);
-
-        if ($cartItem) {
-            $cartItem->delete();
-            return redirect()->back()->with('toastr', [
+        return redirect()
+            ->back()
+            ->with('toastr', [
                 'status' => 'success',
                 'message' => 'Product removed from cart successfully.',
             ]);
-        }
     }
 
-    public function increaseQuantity($id)
+    public function increaseQty($id)
     {
-        $user = Auth::user();
-
-        if (!$user) {
-            return redirect()->route('login')->with('error', 'Bạn cần đăng nhập để thay đổi số lượng.');
+        $cartItem = CartItem::findOrFail($id);
+        $cartItem->quantity += 1;
+        if ($cartItem->productVariants->product->discount) {
+            $cartItem->price = $cartItem->productVariants->product->sale_price * $cartItem->quantity;
+        } else {
+            $cartItem->price = $cartItem->productVariants->product->price * $cartItem->quantity;
         }
+        $cartItem->save();
 
-        // Find the cart item and increase quantity
-        $cartItem = $user->cart()->where('status', 'active')->first()->cartItems()->find($id);
-
-        if ($cartItem) {
-            $cartItem->quantity += 1;
-        
-            // Kiểm tra sự tồn tại của sale_price và discount
-            if ($cartItem->productVariants && $cartItem->productVariants->product) {
-                $product = $cartItem->productVariants->product;
-                
-                // Kiểm tra xem có discount hay không, nếu có thì sử dụng sale_price, nếu không thì dùng price
-                $cartItem->price = $product->discount
-                    ? ($product->sale_price ?? $product->price) * $cartItem->quantity
-                    : $product->price * $cartItem->quantity;
-            }
-        
-            // Lưu lại thay đổi
-            $cartItem->save();
-        }
-
-        return redirect()->back()->with('toastr', [
-            'status' => 'success',
-            'message' => 'Số lượng đã được cập nhật.',
-        ]);
+        return redirect()->back();
     }
 
-    // Decrease quantity of an item in the cart
-    public function decreaseQuantity($id)
+    public function decreaseQty($id)
     {
-        $user = Auth::user();
-
-        if (!$user) {
-            return redirect()->route('login')->with('error', 'Bạn cần đăng nhập để thay đổi số lượng.');
-        }
-
-        // Find the cart item and decrease quantity
-        $cartItem = $user->cart()->where('status', 'active')->first()->cartItems()->find($id);
-
-        if ($cartItem && $cartItem->quantity > 1) {
+        $cartItem = CartItem::findOrFail($id);
+        if ($cartItem->quantity > 1) {
             $cartItem->quantity -= 1;
-        
-            // Kiểm tra sự tồn tại của sale_price và discount
-            if ($cartItem->productVariants && $cartItem->productVariants->product) {
-                $product = $cartItem->productVariants->product;
-                
-                // Kiểm tra xem có discount hay không, nếu có thì sử dụng sale_price, nếu không thì dùng price
-                $cartItem->price = $product->discount
-                    ? ($product->sale_price ?? $product->price) * $cartItem->quantity
-                    : $product->price * $cartItem->quantity;
+            if ($cartItem->productVariants->product->discount) {
+                $cartItem->price = $cartItem->productVariants->product->sale_price * $cartItem->quantity;
+            } else {
+                $cartItem->price = $cartItem->productVariants->product->price * $cartItem->quantity;
             }
-        
-            // Lưu lại thay đổi
             $cartItem->save();
         }
 
-        return redirect()->back()->with('toastr', [
-            'status' => 'success',
-            'message' => 'Số lượng đã được cập nhật.',
-        ]);
+        return redirect()->back();
+    }
+
+    public function saveShippingAddressToSession(Request $request)
+    {
+        if ($request->filled('address_id')) {
+            $address = Shipping_Address::find($request->address_id);
+            if ($address) {
+                session(['shipping_address' => $address->toArray()]);
+            }
+        } else {
+            $request->validate([
+                'full_name' => 'required|string|max:255',
+                'phone' => 'required|string|max:15',
+                'house_number' => 'required|string|max:255',
+                'street' => 'nullable|string|max:255',
+                'ward' => 'nullable|string|max:255',
+                'district' => 'nullable|string|max:255',
+                'city' => 'nullable|string|max:255',
+            ]);
+
+            session([
+                'shipping_address' => [
+                    'full_name' => $request->input('full_name'),
+                    'phone' => $request->input('phone'),
+                    'house_number' => $request->input('house_number'),
+                    'street' => $request->input('street'),
+                    'district' => $request->input('district'),
+                    'ward' => $request->input('ward'),
+                    'city' => $request->input('city'),
+                ],
+            ]);
+        }
+
+        return redirect()->back();
     }
 }

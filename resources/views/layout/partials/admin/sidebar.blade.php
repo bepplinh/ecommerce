@@ -147,9 +147,9 @@
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="{{ route('products.index') }}" class="nav-link ">
+                            <a href="{{ route('order.admin.manage') }}" class="nav-link ">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>All Products</p>
+                                <p>Orders Tracking</p>
                             </a>
                         </li>
                         <li class="nav-item">

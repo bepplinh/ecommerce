@@ -3,6 +3,7 @@
 use Illuminate\Foundation\Application;
 use App\Http\Middleware\AuthenticateAdmin;
 use App\Http\Middleware\AuthenticateClient;
+use App\Http\Middleware\checkAccessCartToCheckout;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 
@@ -15,7 +16,8 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
             'auth.client' => AuthenticateClient::class,
-            'auth.admin' => AuthenticateAdmin::class
+            'auth.admin' => AuthenticateAdmin::class,
+            'checkAccessCartToCheckout' => checkAccessCartToCheckout::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

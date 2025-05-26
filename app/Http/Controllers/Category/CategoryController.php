@@ -13,7 +13,7 @@ class CategoryController extends Controller
         $sort = $request->query('sort', 'asc');
         $query = Category::query();
 
-        if ($request->has('search')) {
+        if ($request->has('search') ) {
             $search = $request->get('search');
             $query->where('name', 'like', "%{$search}%");
         }
@@ -35,7 +35,10 @@ class CategoryController extends Controller
             'parent_id' => 'nullable|exists:categories,id',
         ]);
 
-        Category::create($request->all());
+        $data = $request->only(['name', 'parent_id', 'description']);
+        $data['slug'] = \Str::slug($data['name']);
+
+        Category::create($data);
 
         return redirect()->back()->with('toastr', [
             'status' => 'success',

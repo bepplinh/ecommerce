@@ -13,6 +13,13 @@
     margin-right: 11px;
 }
 
+.size-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+}
+
 .size-option-wrapper {
     position: relative;
 }
@@ -27,8 +34,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 60px;
-    height: 55px;
+    width: 45px;
+    height: 45px;
     border: 1px solid #e0e0e0;
     font-size: 16px;
     font-weight: 400;
@@ -46,7 +53,9 @@
     box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
 }
 
+
 /* XXL size is typically wider */
+
 label[for="sizeXXL"].size-box {
     width: 80px;
 }
@@ -54,7 +63,6 @@ label[for="sizeXXL"].size-box {
 .size-guide {
     font-size: 0.875rem;
 }
-
 
 .color-option-wrapper {
     position: relative;
@@ -74,11 +82,11 @@ label[for="sizeXXL"].size-box {
     transition: all 0.3s ease;
 }
 
-.color-radio:checked + .color-box {
+.color-radio:checked+.color-box {
     border: 1px solid #000;
     background-color: #f8f9fa;
 }
 
-.color-radio:focus + .color-box {
+.color-radio:focus+.color-box {
     box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
 }

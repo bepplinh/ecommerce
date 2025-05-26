@@ -25,12 +25,11 @@ class CategorySeeder extends Seeder
         foreach ($categories as $categoryName) {
             Category::create([
                 'name' => $categoryName,
+                'slug' => Str::slug($categoryName),
                 'description' => $faker->sentence,
-                'parent_id' => null,  // Đây là category cấp cao nhất
+                'parent_id' => null,  
             ]);
         }
-
-        // Tạo các sub-category nếu cần
         $subCategories = [
             ['name' => 'Áo Sơ Mi Nam', 'parent_id' => 1],
             ['name' => 'Áo Sơ Mi Nữ', 'parent_id' => 1],
@@ -49,6 +48,7 @@ class CategorySeeder extends Seeder
         foreach ($subCategories as $subCategory) {
             Category::create([
                 'name' => $subCategory['name'],
+                'slug' => Str::slug($subCategory['name']), // Thêm dòng này
                 'description' => $faker->sentence,
                 'parent_id' => $subCategory['parent_id'],
             ]);
