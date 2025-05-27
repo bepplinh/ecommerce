@@ -134,7 +134,6 @@
                                         </div>
                                     </div>
 
-                                    <!-- Trạng thái -->
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="status" class="form-label">Trạng thái <span
@@ -419,26 +418,7 @@
         }
     });
 
-    // Xóa biến thể
-    document.querySelector('#variants-table').addEventListener('click', function(e) {
-        if (e.target.classList.contains('remove-variant') || e.target.closest('.remove-variant')) {
-            if (confirm('Bạn có chắc chắn muốn xóa biến thể này?')) {
-                const row = e.target.closest('.variant-row');
-                // Khi bấm nút xoá biến thể
-                const idInput = row.querySelector('input[name$="[id]"]');
-                if (idInput && idInput.value) {
-                    const deletedInput = document.createElement('input');
-                    deletedInput.type = 'hidden';
-                    deletedInput.name = 'deleted_variants[]';
-                    deletedInput.value = idInput.value;
-                    document.querySelector('form').appendChild(deletedInput);
-                }
-                row.remove();
-            }
-        }
-    });
 
-    // TinyMCE cho editor
     if (typeof tinymce !== 'undefined') {
         tinymce.init({
             selector: '.editor',
@@ -450,6 +430,35 @@
 
     });
 
+</script>
+
+<script>
+    $(document).on('click', '.remove-variant', function(e) {
+        e.preventDefault();
+
+        if (!confirm('Bạn có chắc chắn muốn xóa biến thể này không?')) {
+            return;
+        }
+
+        var variantRow = $(this).closest('.variant-row');
+        var variantId = variantRow.find('input[name$="[id]"]').val();
+
+        if (variantId) {
+            $.ajax({
+                url: '{{ route("products.variant.destroy", ":id") }}'.replace(':id', variantId),
+                type: 'DELETE',
+                data: { _token: '{{ csrf_token() }}' },
+                 success: function(response) {
+                if(response.status === 'success') {
+                    location.reload();
+                }
+            },
+            });
+        } else {
+            // Nếu variantId rỗng, chỉ xóa row trên DOM (giả sử biến thể mới chưa được lưu)
+            variantRow.remove();
+        }
+    });
 </script>
 
 @endsection

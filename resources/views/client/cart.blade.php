@@ -54,8 +54,13 @@
                                     <tr>
                                         <td>
                                             <div class="shopping-cart__product-item">
-                                                <img loading="lazy" src="{{asset($cartItem->productVariants->product->image_url)}}" width="120"
-                                                    height="120" alt="" />
+                                                @php
+                                                    $firstImage = $cartItem->productVariants->images->first();
+                                                @endphp
+
+                                                <img loading="lazy"
+                                                     src="{{ $firstImage ? asset('storage/' . $firstImage->image_path) : asset('images/no-image.png') }}"
+                                                     width="120" height="120" alt="" />
                                             </div>
                                         </td>
                                         <td>

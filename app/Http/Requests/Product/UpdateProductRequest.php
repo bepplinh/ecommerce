@@ -36,6 +36,7 @@ class UpdateProductRequest extends FormRequest
             'variants.*.color_id' => 'required|exists:colors,id',
             'variants.*.size_id' => 'required|exists:sizes,id',
             'variants.*.stock' => 'required|integer|min:0',
+            'discount_id' => 'nullable|exists:discounts,id',
         ];
     }
 

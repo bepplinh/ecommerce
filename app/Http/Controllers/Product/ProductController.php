@@ -170,6 +170,7 @@ class ProductController extends Controller
         $product->status = $request->status;
         $product->category_id = $request->category_id;
         $product->brand_id = $request->brand_id;
+        $product->discount_id = $request->discount_id ?? null;
         $product->save();
 
         if ($request->has('variants')) {
@@ -227,6 +228,17 @@ class ProductController extends Controller
         return redirect()->back()->with('toastr', [
             'status' => 'success',
             'message' => 'Image deleted successfully',
+        ]);
+    }
+
+    public function destroyVariant($id)
+    {
+        $variant = ProductVariants::findOrFail($id);
+        $variant->delete();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Variant deleted successfully.'
         ]);
     }
 }

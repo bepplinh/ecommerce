@@ -15,7 +15,7 @@ class ProductImage extends Model
         'is_main',
     ];
     
-    public function productVariant()
+    public function productVariants()
     {
         return $this->belongsTo(ProductVariants::class, 'product_variant_id');
     }

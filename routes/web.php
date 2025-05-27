@@ -80,6 +80,7 @@ Route::get('/image/product/index', [ImageProductController::class, 'index'])->na
 Route::get('/image/{product}/edit', [ImageProductController::class, 'edit'])->name('productImage.edit');
 Route::get('/product-variants/{variant}/images/create', [ImageProductController::class, 'create'])->name('product.images.create');
 Route::post('/product-variants/{variantId}/images', [ImageProductController::class, 'store'])->name('product.images.store');
+Route::delete('/products/variants/{id}', [ProductController::class, 'destroyVariant'])->name('products.variant.destroy');
 
 Route::get('/detail/{id}', [DetailController::class, 'showProductDetail'])->name('product.detail');
 Route::get('/get-sizes/{colorId}', [DetailController::class, 'getSizesByColor']);

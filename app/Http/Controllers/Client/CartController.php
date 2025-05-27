@@ -38,7 +38,7 @@ class CartController extends Controller
             $query->where('user_id', $user->id)
                   ->where('status', '!=', 'completed');
         })
-        ->with('productVariants.product')
+        ->with('productVariants.product', 'productVariants.images')
         ->get();
 
         return view('client.cart', compact('cartItems', 'shipping_addresses'));
