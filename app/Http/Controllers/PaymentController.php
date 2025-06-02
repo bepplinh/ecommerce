@@ -153,9 +153,14 @@ class PaymentController extends Controller
                 'quantity' => $cartItem->quantity,
                 'price' => $cartItem->productVariants->product->sale_price ?? $cartItem->productVariants->product->price,
             ]);
+
+            // Update product stock
+            $variant = $cartItem->productVariants;
+            $newStock = $variant->stock - $cartItem->quantity;
+            $variant->stock = $newStock > 0 ? $newStock : 0;
+            $variant->save();
         }
 
-        // Cập nhật trạng thái cart
         $cart->status = 'completed';
         $cart->save();
 

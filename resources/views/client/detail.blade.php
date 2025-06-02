@@ -227,6 +227,14 @@
                                             sizeLabel.classList.add('size-box');
                                             sizeLabel.textContent = variant.size.name;
 
+                                            // Nếu variant hết hàng thì disable radio và làm label mờ
+                                            if (variant.stock == 0) {
+                                                sizeRadio.disabled = true;
+                                                sizeLabel.style.backgroundColor = '#e0e0e0';
+                                                sizeLabel.style.opacity = '0.6';
+                                                sizeLabel.textContent += ' (Hết hàng)';
+                                            }
+
                                             sizeBoxWrapper.appendChild(sizeRadio);
                                             sizeBoxWrapper.appendChild(sizeLabel);
                                             sizesContainer.appendChild(sizeBoxWrapper);
@@ -369,6 +377,14 @@
                     sizeLabel.setAttribute('for', `size${variant.size_id}`);
                     sizeLabel.classList.add('size-box');
                     sizeLabel.textContent = variant.size.name;
+
+                    // Nếu variant hết hàng thì disable radio và làm label mờ
+                    if (variant.stock == 0) {
+                        sizeRadio.disabled = true;
+                        sizeLabel.style.backgroundColor = '#e0e0e0';
+                        sizeLabel.style.opacity = '0.6';
+
+                    }
 
                     sizeBoxWrapper.appendChild(sizeRadio);
                     sizeBoxWrapper.appendChild(sizeLabel);

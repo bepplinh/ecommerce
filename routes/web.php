@@ -21,6 +21,7 @@ use App\Http\Controllers\Product\DiscountController;
 use App\Http\Controllers\Category\CategoryController;
 use App\Http\Controllers\Client\OrderManageController;
 use App\Http\Controllers\Product\ImageProductController;
+use App\Http\Controllers\Admin\NotificationController;
 
 Route::get('/', function () {
     return view('client.home');
@@ -60,6 +61,9 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('order/admin/manage', [OrderController::class, 'index'])->name('order.admin.manage');
         Route::get('order/admin/manage/{id}', [OrderController::class, 'show'])->name('order.admin.detail');
         Route::put('/admin/orders/{id}/status', [OrderController::class, 'update'])->name('order.admin.update');
+
+        Route::get('/admin/notifications', [NotificationController::class, 'index'])
+            ->name('admin.notifications.index');
     });
 
     Route::get('/logout', [LogoutController::class, 'logout'])->name('logout');
