@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Category;
 
 use App\Models\Category;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -36,7 +37,7 @@ class CategoryController extends Controller
         ]);
 
         $data = $request->only(['name', 'parent_id', 'description']);
-        $data['slug'] = \Str::slug($data['name']);
+        $data['slug'] = Str::slug($data['name']);
 
         Category::create($data);
 
@@ -59,7 +60,13 @@ class CategoryController extends Controller
      */
     public function edit(Category $category)
     {
-        //
+        $parentCategories = Category::where('id', '!=', $category->id)->pluck('name', 'id');
+        return view('category.editCategory', [
+            'category' => $category,
+            'parentCategories' => $parentCategories,
+            'title' => 'Edit Category',
+            'heading' => 'Edit Category',
+        ]);
     }
 
     /**
@@ -67,7 +74,22 @@ class CategoryController extends Controller
      */
     public function update(Request $request, Category $category)
     {
-        //
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'parent_id' => 'nullable|exists:categories,id|not_in:' . $category->id,
+            'description' => 'nullable|string',
+        ]);
+
+        $category->name = $request->input('name');
+        $category->slug = \Illuminate\Support\Str::slug($request->input('name'));
+        $category->parent_id = $request->input('parent_id');
+        $category->description = $request->input('description');
+        $category->save();
+
+        return redirect()->back()->with('toastr', [
+            'status' => 'success',
+            'message' => 'Category updated successfully.',
+        ]);
     }
 
     /**

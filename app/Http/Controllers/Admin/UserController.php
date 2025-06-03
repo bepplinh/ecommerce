@@ -16,6 +16,16 @@ class UserController extends Controller
             'heading' => 'Create User',
         ]);
     }
+
+    public function showUsers() {
+        $users = User::all();
+        return view('admin.listUser')->with([
+            'title' => 'Users',
+            'heading' => 'Users',
+            'users' => $users,
+        ]);
+    }
+
     public function createUser(Request $request) {
         $request->validate([
             'username' => ['required','string','max:255','unique:users'],
@@ -62,6 +72,16 @@ class UserController extends Controller
         return redirect()->back()->with('toastr', [
             'status' => 'success',
             'message' => 'User updated successfully!'
+        ]);
+    }
+
+    public function deleteUser($id) {
+        $user = User::findOrFail($id);
+        $user->delete();
+
+        return redirect()->back()->with('toastr', [
+            'status' => 'success',
+            'message' => 'User deleted successfully!'
         ]);
     }
 }

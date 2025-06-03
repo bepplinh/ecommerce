@@ -201,7 +201,7 @@ class ProductController extends Controller
             }
         }
 
-        return redirect()->route('products.index')->with('toastr', [
+        return redirect()->back()->with('toastr', [
             'status' => 'success',
             'message' => 'Product updated successfully',
         ]);

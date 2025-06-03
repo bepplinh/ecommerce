@@ -32,18 +32,18 @@ Route::get('/about', function () {
 
 Route::group(['middleware' => 'auth'], function () {
     Route::group(['middleware' => 'auth.client'], function () {
-        // Route::get('/client', function () {
-        //     return view('client.home');
-        // })->name('home');
+        
     });
 
     Route::group(['middleware' => 'auth.admin'], function () {
         Route::get('/admin', [AdminController::class, 'index'])->name('indexAdmin');
 
-        Route::get('/showCreateUser', [UserController::class, 'showCreateUser']);
+        Route::get('/showUsers', [UserController::class, 'showUsers'])->name('showUsers');
+        Route::get('/showCreateUser', [UserController::class, 'showCreateUser'])->name('showCreateUser');
         Route::post('/createUser', [UserController::class, 'createUser'])->name('createUser');
-        Route::get('/showEditUser/{id}', [UserController::class, 'showEditUser']);
+        Route::get('/showEditUser/{id}', [UserController::class, 'showEditUser'])->name('showEditUser');
         Route::post('/editUser/{id}', [UserController::class, 'editUser'])->name('updateUser');
+        Route::delete('/deleteUser/{id}', [UserController::class, 'deleteUser'])->name('deleteUser');
 
         Route::resource('products', ProductController::class);
         Route::resource('brands', BrandController::class);
@@ -64,6 +64,12 @@ Route::group(['middleware' => 'auth'], function () {
 
         Route::get('/admin/notifications', [NotificationController::class, 'index'])
             ->name('admin.notifications.index');
+
+        Route::get('/image/product/index', [ImageProductController::class, 'index'])->name('product.images.index');
+        Route::get('/image/{product}/edit', [ImageProductController::class, 'edit'])->name('productImage.edit');
+        Route::get('/product-variants/{variant}/images/create', [ImageProductController::class, 'create'])->name('product.images.create');
+        Route::post('/product-variants/{variantId}/images', [ImageProductController::class, 'store'])->name('product.images.store');
+        Route::delete('/products/variants/{id}', [ProductController::class, 'destroyVariant'])->name('products.variant.destroy');
     });
 
     Route::get('/logout', [LogoutController::class, 'logout'])->name('logout');
@@ -80,11 +86,6 @@ Route::get('login/google/callback', [SocialController::class, 'handleGoogleCallb
 
 Route::get('/shop', [ShopController::class, 'index'])->name('shop');
 
-Route::get('/image/product/index', [ImageProductController::class, 'index'])->name('product.images.index');
-Route::get('/image/{product}/edit', [ImageProductController::class, 'edit'])->name('productImage.edit');
-Route::get('/product-variants/{variant}/images/create', [ImageProductController::class, 'create'])->name('product.images.create');
-Route::post('/product-variants/{variantId}/images', [ImageProductController::class, 'store'])->name('product.images.store');
-Route::delete('/products/variants/{id}', [ProductController::class, 'destroyVariant'])->name('products.variant.destroy');
 
 Route::get('/detail/{id}', [DetailController::class, 'showProductDetail'])->name('product.detail');
 Route::get('/get-sizes/{colorId}', [DetailController::class, 'getSizesByColor']);

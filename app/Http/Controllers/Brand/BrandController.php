@@ -31,8 +31,8 @@ class BrandController extends Controller
     {
         $request->validate([
             'name' => 'required',
-            'description' => 'required',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'description' => '',
+            'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         $imagePath = null;
